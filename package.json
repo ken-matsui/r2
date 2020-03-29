@@ -65,7 +65,7 @@
     "@types/ws": "^4.0.1",
     "@types/zeromq": "^4.5.3",
     "@types/opn": "^5.1.0",
-    "coveralls": "^3.0.0",
+    "coveralls": "^3.0.11",
     "cpy-cli": "^1.0.1",
     "jest": "^21.0.0",
     "nock": "^9.0.24",
