@@ -9,13 +9,13 @@ R2 Bitcoin Arbitrager is an automatic arbitrage trading application targeting Bi
 
 Web UI mode is for browser clients.
 
-![webui](webui.png)
+![webui](docs/webui.png)
 
 ## Console Mode
 
 Console mode is for CUI-only environment like Linux boxes with no GUI.
 
-![Screenshot](screenshot.gif)
+![Screenshot](docs/screenshot.gif)
 
 ## Getting Started
 
@@ -90,7 +90,7 @@ After the spread has became smaller than the configured value, `exitNetProfitRat
 - Concurrency: All API calls to exchanges are concurrently sent/handled.
 - ️Dynamic configuration: User can dynamically update the configuration based on spread statistics by a simple js script, like setting `minTargetProfitPercent` to μ + σ every few seconds.
 
-![diagram](diagram.png)
+![diagram](docs/diagram.png)
 
 ## Configuration
 
