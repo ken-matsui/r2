@@ -136,9 +136,9 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     }
 
     return {
+      child_order_type: childOrderType,
       price,
       product_code: productCode,
-      child_order_type: childOrderType,
       side: OrderSide[order.side].toUpperCase(),
       size: order.size,
       time_in_force: timeInForce,
