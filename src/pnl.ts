@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { findBrokerConfig } from "./configUtil";
 import OrderImpl from "./OrderImpl";
-import { RootConfig, OrderSide } from "./types";
+import { OrderSide, RootConfig } from "./types";
 
 export function calcCommission(price: number, volume: number, commissionPercent: number): number {
   return commissionPercent !== undefined ? price * volume * (commissionPercent / 100) : 0;
