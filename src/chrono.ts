@@ -1,5 +1,5 @@
-import * as mkdirp from 'mkdirp';
-import { ChronoDB } from '@bitr/chronodb';
+import { ChronoDB } from "@bitr/chronodb";
+import * as mkdirp from "mkdirp";
 
 const prodPath = `${process.cwd()}/datastore/main`;
 let chronoDB: ChronoDB;
