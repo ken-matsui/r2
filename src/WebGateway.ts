@@ -1,32 +1,32 @@
-import { injectable, inject } from 'inversify';
-import symbols from './symbols';
+import { getLogger } from "@bitr/logger";
+import { autobind } from "core-decorators";
+import * as express from "express";
+import * as http from "http";
+import { inject, injectable } from "inversify";
+import * as _ from "lodash";
+import * as WebSocket from "ws";
+import { wssPort } from "./constants";
+import OppotunitySearcher from "./OpportunitySearcher";
+import OrderImpl from "./OrderImpl";
+import OrderService from "./OrderService";
+import PositionService from "./PositionService";
+import QuoteAggregator from "./QuoteAggregator";
+import symbols from "./symbols";
 import {
-  IQuote,
-  IConfigStore,
-  IBrokerPosition,
-  IBrokerMap,
-  ISpreadAnalysisResult,
   ConfigRoot,
-  ILimitCheckResult
-} from './types';
-import QuoteAggregator from './QuoteAggregator';
-import { getLogger } from '@bitr/logger';
-import * as WebSocket from 'ws';
-import { wssPort } from './constants';
-import * as _ from 'lodash';
-import PositionService from './PositionService';
-import OppotunitySearcher from './OpportunitySearcher';
-import OrderService from './OrderService';
-import OrderImpl from './OrderImpl';
-import * as express from 'express';
-import * as http from 'http';
-import { autobind } from 'core-decorators';
-const opn = require('opn');
+  IBrokerMap,
+  IBrokerPosition,
+  IConfigStore,
+  ILimitCheckResult,
+  IQuote,
+  ISpreadAnalysisResult,
+} from "./types";
+const opn = require("opn");
 
 @injectable()
 @autobind
 export default class WebGateway {
-  private readonly eventMapper: [any, string, any][];
+  private readonly eventMapper: Array<[any, string, any]>;
   private server: http.Server;
   private app: express.Express;
   private wss: WebSocket.Server;
@@ -39,43 +39,43 @@ export default class WebGateway {
     @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly positionService: PositionService,
     private readonly opportunitySearcher: OppotunitySearcher,
-    private readonly orderService: OrderService
+    private readonly orderService: OrderService,
   ) {
     this.eventMapper = [
-      [this.quoteAggregator, 'quoteUpdated', this.quoteUpdated],
-      [this.positionService, 'positionUpdated', this.positionUpdated],
-      [this.opportunitySearcher, 'spreadAnalysisDone', this.spreadAnalysisDone],
-      [this.opportunitySearcher, 'limitCheckDone', this.limitCheckDone],
-      [this.opportunitySearcher, 'activePairRefresh', this.activePairRefresh],
-      [this.orderService, 'orderCreated', this.orderCreated],
-      [this.orderService, 'orderUpdated', this.orderUpdated],
-      [this.orderService, 'orderFinalized', this.orderFinalized],
-      [this.configStore, 'configUpdated', this.configUpdated]
+      [this.quoteAggregator, "quoteUpdated", this.quoteUpdated],
+      [this.positionService, "positionUpdated", this.positionUpdated],
+      [this.opportunitySearcher, "spreadAnalysisDone", this.spreadAnalysisDone],
+      [this.opportunitySearcher, "limitCheckDone", this.limitCheckDone],
+      [this.opportunitySearcher, "activePairRefresh", this.activePairRefresh],
+      [this.orderService, "orderCreated", this.orderCreated],
+      [this.orderService, "orderUpdated", this.orderUpdated],
+      [this.orderService, "orderFinalized", this.orderFinalized],
+      [this.configStore, "configUpdated", this.configUpdated],
     ];
   }
 
-  async start() {
+  public async start() {
     const { webGateway } = this.configStore.config;
     if (!webGateway || !webGateway.enabled) {
       return;
     }
 
-    const host = _.defaultTo(webGateway.host, 'localhost');
+    const host = _.defaultTo(webGateway.host, "localhost");
     this.log.debug(`Starting ${this.constructor.name}...`);
     for (const e of this.eventMapper) {
       e[0].on(e[1], e[2]);
     }
     this.app = express();
     this.app.use(express.static(this.staticPath));
-    this.app.get('*', (req, res) => {
+    this.app.get("*", (req, res) => {
       res.sendFile(`${this.staticPath}/index.html`);
     });
     this.server = this.app.listen(wssPort, host, () => {
       this.log.debug(`Express started listening on ${wssPort}.`);
     });
     this.wss = new WebSocket.Server({ server: this.server });
-    this.wss.on('connection', ws => {
-      ws.on('error', err => {
+    this.wss.on("connection", (ws) => {
+      ws.on("error", (err) => {
         this.log.debug(err.message);
       });
       this.clients.push(ws);
@@ -86,7 +86,7 @@ export default class WebGateway {
     this.log.debug(`Started ${this.constructor.name}.`);
   }
 
-  async stop() {
+  public async stop() {
     const { webGateway } = this.configStore.config;
     if (!webGateway || !webGateway.enabled) {
       return;
@@ -102,39 +102,39 @@ export default class WebGateway {
   }
 
   private async quoteUpdated(quotes: IQuote[]): Promise<void> {
-    this.broadcast('quoteUpdated', quotes);
+    this.broadcast("quoteUpdated", quotes);
   }
 
   private positionUpdated(positions: IBrokerMap<IBrokerPosition>) {
-    this.broadcast('positionUpdated', positions);
+    this.broadcast("positionUpdated", positions);
   }
 
   private spreadAnalysisDone(result: ISpreadAnalysisResult) {
-    this.broadcast('spreadAnalysisDone', result);
+    this.broadcast("spreadAnalysisDone", result);
   }
 
   private limitCheckDone(limitCheckResult: ILimitCheckResult) {
-    this.broadcast('limitCheckDone', limitCheckResult);
+    this.broadcast("limitCheckDone", limitCheckResult);
   }
 
   private async activePairRefresh(pairsWithAnalysis: any) {
-    this.broadcast('activePairRefresh', pairsWithAnalysis);
+    this.broadcast("activePairRefresh", pairsWithAnalysis);
   }
 
   private orderCreated(order: OrderImpl) {
-    this.broadcast('orderCreated', order);
+    this.broadcast("orderCreated", order);
   }
 
   private orderUpdated(order: OrderImpl) {
-    this.broadcast('orderUpdated', order);
+    this.broadcast("orderUpdated", order);
   }
 
   private orderFinalized(order: OrderImpl) {
-    this.broadcast('orderFinalized', order);
+    this.broadcast("orderFinalized", order);
   }
 
   private configUpdated(config: ConfigRoot) {
-    this.broadcast('configUpdated', this.sanitize(config));
+    this.broadcast("configUpdated", this.sanitize(config));
   }
 
   private sanitize(config: ConfigRoot): ConfigRoot {
@@ -150,7 +150,7 @@ export default class WebGateway {
   private broadcast(type: string, body: any) {
     for (const client of this.clients) {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type, body }), err => {
+        client.send(JSON.stringify({ type, body }), (err) => {
           if (err) {
             this.log.debug(err.message);
             _.pull(this.clients, client);
