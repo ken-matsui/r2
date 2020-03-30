@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 import BrokerApi from "./BrokerApi";
-import { CashMarginTypeStrategy } from "./types";
+import { ICashMarginTypeStrategy } from "./types";
 
-export default class NetOutStrategy implements CashMarginTypeStrategy {
+export default class NetOutStrategy implements ICashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
 
   public async getBtcPosition(): Promise<number> {

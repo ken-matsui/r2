@@ -9,7 +9,7 @@ import {
   ClosingTrade,
   OrdersResponse,
   PriceLevelsResponse,
-  SendOrderRequest,
+  ISendOrderRequest,
   SendOrderResponse,
   TradingAccount,
   TradingAccountsResponse,
@@ -21,9 +21,9 @@ export default class BrokerApi {
 
   constructor(private readonly key: string, private readonly secret: string) {}
 
-  public async sendOrder(request: SendOrderRequest): Promise<SendOrderResponse> {
+  public async sendOrder(request: ISendOrderRequest): Promise<SendOrderResponse> {
     const path = "/orders/";
-    return new SendOrderResponse(await this.post<SendOrderResponse, SendOrderRequest>(path, request));
+    return new SendOrderResponse(await this.post<SendOrderResponse, ISendOrderRequest>(path, request));
   }
 
   public async cancelOrder(id: string): Promise<CancelOrderResponse> {

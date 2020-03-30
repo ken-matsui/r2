@@ -16,16 +16,16 @@ import { timestampToDate, toExecution, toQuote } from "../util";
 import BrokerApi from "./BrokerApi";
 import CashStrategy from "./CashStrategy";
 import NetOutStrategy from "./NetOutStrategy";
-import { CashMarginTypeStrategy, OrdersResponse, PriceLevelsResponse, SendOrderRequest } from "./types";
+import { ICashMarginTypeStrategy, OrdersResponse, PriceLevelsResponse, ISendOrderRequest } from "./types";
 
 export default class BrokerAdapterImpl implements IBrokerAdapter {
   public readonly broker = "Quoine";
-  public readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
+  public readonly strategyMap: Map<CashMarginType, ICashMarginTypeStrategy>;
   private readonly brokerApi: BrokerApi;
 
   constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
-    this.strategyMap = new Map<CashMarginType, CashMarginTypeStrategy>([
+    this.strategyMap = new Map<CashMarginType, ICashMarginTypeStrategy>([
       [CashMarginType.Cash, new CashStrategy(this.brokerApi)],
       [CashMarginType.NetOut, new NetOutStrategy(this.brokerApi)],
     ]);
@@ -67,7 +67,7 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     return this.mapToQuote(response);
   }
 
-  private mapOrderToSendOrderRequest(order: IOrder): SendOrderRequest {
+  private mapOrderToSendOrderRequest(order: IOrder): ISendOrderRequest {
     let productId: string;
     switch (order.symbol) {
       case "BTC/JPY":
