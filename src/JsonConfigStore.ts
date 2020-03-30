@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { getLogger } from '@bitr/logger';
-import { ConfigRequest, ConfigResponse, ConfigResponder } from './messages';
+import { IConfigRequest, IConfigResponse, ConfigResponder } from './messages';
 import { EventEmitter } from 'events';
 
 const writeFile = promisify(fs.writeFile);
@@ -48,7 +48,7 @@ export default class JsonConfigStore extends EventEmitter implements IConfigStor
     this.responder.dispose();
   }
 
-  private async requestHandler(request: ConfigRequest | undefined, respond: (response: ConfigResponse) => void) {
+  private async requestHandler(request: IConfigRequest | undefined, respond: (response: IConfigResponse) => void) {
     if (request === undefined) {
       this.log.debug(`Invalid message received.`);
       respond({ success: false, reason: 'invalid message' });
