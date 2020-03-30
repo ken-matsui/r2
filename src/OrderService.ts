@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { injectable, inject } from 'inversify';
-import OrderImpl, { OrderInit } from './OrderImpl';
+import OrderImpl, { IOrderInit } from './OrderImpl';
 import symbols from './symbols';
 import { HistoricalOrderStore } from './types';
 import _ = require('lodash');
@@ -13,7 +13,7 @@ export default class OrderService extends EventEmitter {
     super();
   }
 
-  createOrder(init: OrderInit): OrderImpl {
+  createOrder(init: IOrderInit): OrderImpl {
     const order = new OrderImpl(init);
     this.orders.push(order);
     this.emit('orderCreated', order);
