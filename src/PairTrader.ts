@@ -1,26 +1,26 @@
-import { getLogger } from '@bitr/logger';
-import { injectable, inject } from 'inversify';
-import * as _ from 'lodash';
-import OrderImpl from './OrderImpl';
+import { getLogger } from "@bitr/logger";
+import { EventEmitter } from "events";
+import { inject, injectable } from "inversify";
+import * as _ from "lodash";
+import BrokerAdapterRouter from "./BrokerAdapterRouter";
+import { findBrokerConfig } from "./configUtil";
+import t from "./intl";
+import OrderImpl from "./OrderImpl";
+import * as OrderUtil from "./OrderUtil";
+import { calcProfit } from "./pnl";
+import SingleLegHandler from "./SingleLegHandler";
+import symbols from "./symbols";
 import {
+  IActivePairStore,
   IConfigStore,
+  IQuote,
   ISpreadAnalysisResult,
+  OrderPair,
+  OrderSide,
   OrderType,
   QuoteSide,
-  OrderSide,
-  IActivePairStore,
-  IQuote,
-  OrderPair
-} from './types';
-import t from './intl';
-import { delay, formatQuote } from './util';
-import symbols from './symbols';
-import SingleLegHandler from './SingleLegHandler';
-import { findBrokerConfig } from './configUtil';
-import BrokerAdapterRouter from './BrokerAdapterRouter';
-import { EventEmitter } from 'events';
-import { calcProfit } from './pnl';
-import * as OrderUtil from './OrderUtil';
+} from "./types";
+import { delay, formatQuote } from "./util";
 
 @injectable()
 export default class PairTrader extends EventEmitter {
@@ -30,20 +30,20 @@ export default class PairTrader extends EventEmitter {
     @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly brokerAdapterRouter: BrokerAdapterRouter,
     @inject(symbols.ActivePairStore) private readonly activePairStore: IActivePairStore,
-    private readonly singleLegHandler: SingleLegHandler
+    private readonly singleLegHandler: SingleLegHandler,
   ) {
     super();
   }
 
   set status(value: string) {
-    this.emit('status', value);
+    this.emit("status", value);
   }
 
-  async trade(spreadAnalysisResult: ISpreadAnalysisResult, closable: boolean): Promise<void> {
+  public async trade(spreadAnalysisResult: ISpreadAnalysisResult, closable: boolean): Promise<void> {
     const { bid, ask, targetVolume } = spreadAnalysisResult;
-    const sendTasks = [ask, bid].map(q => this.sendOrder(q, targetVolume, OrderType.Limit));
+    const sendTasks = [ask, bid].map((q) => this.sendOrder(q, targetVolume, OrderType.Limit));
     const orders = await Promise.all(sendTasks);
-    this.status = 'Sent';
+    this.status = "Sent";
     await this.checkOrderState(orders, closable);
   }
 
@@ -54,7 +54,7 @@ export default class PairTrader extends EventEmitter {
       this.log.info(t`OrderCheckAttempt`, i);
       this.log.info(t`CheckingIfBothLegsAreDoneOrNot`);
       try {
-        const refreshTasks = orders.map(o => this.brokerAdapterRouter.refresh(o));
+        const refreshTasks = orders.map((o) => this.brokerAdapterRouter.refresh(o));
         await Promise.all(refreshTasks);
       } catch (ex) {
         this.log.warn(ex.message);
@@ -63,12 +63,12 @@ export default class PairTrader extends EventEmitter {
 
       this.printOrderSummary(orders);
 
-      if (orders.every(o => o.filled)) {
+      if (orders.every((o) => o.filled)) {
         this.log.info(t`BothLegsAreSuccessfullyFilled`);
         if (closable) {
-          this.status = 'Closed';
+          this.status = "Closed";
         } else {
-          this.status = 'Filled';
+          this.status = "Filled";
           if (orders[0].size === orders[1].size) {
             this.log.debug(`Putting pair ${JSON.stringify(orders)}.`);
             await this.activePairStore.put(orders as OrderPair);
@@ -79,16 +79,16 @@ export default class PairTrader extends EventEmitter {
       }
 
       if (i === config.maxRetryCount) {
-        this.status = 'MaxRetryCount breached';
+        this.status = "MaxRetryCount breached";
         this.log.warn(t`MaxRetryCountReachedCancellingThePendingOrders`);
-        const cancelTasks = orders.filter(o => !o.filled).map(o => this.brokerAdapterRouter.cancel(o));
+        const cancelTasks = orders.filter((o) => !o.filled).map((o) => this.brokerAdapterRouter.cancel(o));
         await Promise.all(cancelTasks);
         if (
-          orders.some(o => !o.filled) &&
-          _(orders).sumBy(o => o.filledSize * (o.side === OrderSide.Buy ? -1 : 1)) !== 0
+          orders.some((o) => !o.filled) &&
+          _(orders).sumBy((o) => o.filledSize * (o.side === OrderSide.Buy ? -1 : 1)) !== 0
         ) {
           const subOrders = await this.singleLegHandler.handle(orders as OrderPair, closable);
-          if (subOrders.length !== 0 && subOrders.every(o => o.filled)) {
+          if (subOrders.length !== 0 && subOrders.every((o) => o.filled)) {
             this.printProfit(_.concat(orders, subOrders));
           }
         }
@@ -103,28 +103,28 @@ export default class PairTrader extends EventEmitter {
     const { config } = this.configStore;
     const { cashMarginType, leverageLevel } = brokerConfig;
     const orderSide = quote.side === QuoteSide.Ask ? OrderSide.Buy : OrderSide.Sell;
-    const orderPrice = 
+    const orderPrice =
      (quote.side === QuoteSide.Ask && config.acceptablePriceRange !== undefined)
-     ? _.round(quote.price * (1 + config.acceptablePriceRange/100)) as number
+     ? _.round(quote.price * (1 + config.acceptablePriceRange / 100)) as number
      : (quote.side === QuoteSide.Bid && config.acceptablePriceRange !== undefined)
-     ? _.round(quote.price * (1 - config.acceptablePriceRange/100)) as number
+     ? _.round(quote.price * (1 - config.acceptablePriceRange / 100)) as number
      : quote.price;
     const order = new OrderImpl({
-      symbol: this.configStore.config.symbol,
       broker: quote.broker,
+      cashMarginType,
+      leverageLevel,
+      price: orderPrice,
       side: orderSide,
       size: targetVolume,
-      price: orderPrice,
-      cashMarginType,
+      symbol: this.configStore.config.symbol,
       type: orderType,
-      leverageLevel
     });
     await this.brokerAdapterRouter.send(order);
     return order;
   }
 
   private printOrderSummary(orders: OrderImpl[]) {
-    orders.forEach(o => {
+    orders.forEach((o) => {
       if (o.filled) {
         this.log.info(OrderUtil.toExecSummary(o));
       } else {
