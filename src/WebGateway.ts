@@ -4,6 +4,7 @@ import * as express from "express";
 import * as http from "http";
 import { inject, injectable } from "inversify";
 import * as _ from "lodash";
+import opn = require("opn");
 import * as WebSocket from "ws";
 import { wssPort } from "./constants";
 import OppotunitySearcher from "./OpportunitySearcher";
@@ -13,15 +14,14 @@ import PositionService from "./PositionService";
 import QuoteAggregator from "./QuoteAggregator";
 import symbols from "./symbols";
 import {
-  RootConfig,
   IBrokerMap,
   IBrokerPosition,
   IConfigStore,
   ILimitCheckResult,
   IQuote,
   ISpreadAnalysisResult,
+  RootConfig,
 } from "./types";
-const opn = require("opn");
 
 @injectable()
 @autobind
