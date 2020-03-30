@@ -109,13 +109,13 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
 
     return {
       order: {
-        leverage_level: leverageLevel,
-        order_direction: orderDirection,
-        order_type: orderType,
         price,
         product_id: productId,
-        quantity: order.size,
+        order_direction: orderDirection,
+        order_type: orderType,
         side: OrderSide[order.side].toLowerCase(),
+        quantity: order.size,
+        leverage_level: leverageLevel,
       },
     };
   }
