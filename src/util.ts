@@ -1,23 +1,23 @@
-import * as _ from 'lodash';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import * as querystring from 'querystring';
-import { Execution, Order, Broker, QuoteSide, Quote } from './types';
+import * as crypto from "crypto";
+import * as fs from "fs";
+import * as _ from "lodash";
+import * as querystring from "querystring";
+import { Broker, Execution, Order, Quote, QuoteSide } from "./types";
 
-interface ToStringable {
+interface IToStringable {
   toString(): string;
 }
 
-export function padStart(s: ToStringable, n: number): string {
+export function padStart(s: IToStringable, n: number): string {
   return _.padStart(s.toString(), n);
 }
 
-export function padEnd(s: ToStringable, n: number): string {
+export function padEnd(s: IToStringable, n: number): string {
   return _.padEnd(s.toString(), n);
 }
 
 export function hr(width: number): string {
-  return _.join(_.times(width, _.constant('-')), '');
+  return _.join(_.times(width, _.constant("-")), "");
 }
 
 export function eRound(n: number): number {
@@ -29,19 +29,19 @@ export function almostEqual(a: number, b: number, tolerancePercent: number): boo
 }
 
 export function delay(time: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, time));
+  return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-export function hmac(secret: string, text: string, algo: string = 'sha256'): string {
+export function hmac(secret: string, text: string, algo: string = "sha256"): string {
   return crypto
     .createHmac(algo, secret)
     .update(text)
-    .digest('hex');
+    .digest("hex");
 }
 
-export const nonce: () => string = (function() {
+export const nonce: () => string = (() => {
   let prev = 0;
-  return function() {
+  return () => {
     const n = Date.now();
     if (n <= prev) {
       prev += 1;
@@ -61,6 +61,7 @@ export function safeQueryStringStringify(o: any) {
   return querystring.stringify(noUndefinedFields);
 }
 
+// tslint:disable-next-line:ban-types
 export function revive<T, K>(T: Function, o: K): T {
   const newObject = Object.create(T.prototype);
   return Object.assign(newObject, o) as T;
@@ -71,7 +72,7 @@ function removeBom(s: string): string {
 }
 
 export function readJsonFileSync(filepath: string): any {
-  const content = fs.readFileSync(filepath, 'utf-8');
+  const content = fs.readFileSync(filepath, "utf-8");
   return JSON.parse(removeBom(content));
 }
 
@@ -81,7 +82,7 @@ export function toExecution(order: Order): Partial<Execution> {
     brokerOrderId: order.brokerOrderId,
     cashMarginType: order.cashMarginType,
     side: order.side,
-    symbol: order.symbol
+    symbol: order.symbol,
   };
 }
 
@@ -90,11 +91,11 @@ export function toQuote(broker: Broker, side: QuoteSide, price: number, volume: 
 }
 
 export function cwd() {
-  return process.env.NODE_ENV === 'test' ? `${process.cwd()}/src/__tests__/sandbox` : process.cwd();
+  return process.env.NODE_ENV === "test" ? `${process.cwd()}/src/__tests__/sandbox` : process.cwd();
 }
 
 export function splitSymbol(symbol: string): { baseCcy: string; quoteCcy: string } {
-  const [baseCcy, quoteCcy] = symbol.split('/');
+  const [baseCcy, quoteCcy] = symbol.split("/");
   return { baseCcy, quoteCcy };
 }
 
