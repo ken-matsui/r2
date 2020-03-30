@@ -5,11 +5,11 @@ import WebClient from "../WebClient";
 import {
   AccountsBalanceResponse,
   CancelOrderResponse,
+  ILeveragePositionsRequest,
+  INewOrderRequest,
   LeverageBalanceResponse,
   LeveragePosition,
-  ILeveragePositionsRequest,
   LeveragePositionsResponse,
-  INewOrderRequest,
   NewOrderResponse,
   OpenOrdersResponse,
   OrderBooksResponse,
