@@ -9,7 +9,7 @@ import { getConfigPath, getConfigRoot } from "./configUtil";
 import ConfigValidator from "./ConfigValidator";
 import { configStoreSocketUrl } from "./constants";
 import { ConfigResponder, IConfigRequest, IConfigResponse } from "./messages";
-import { RootConfig, IConfigStore } from "./types";
+import { IConfigStore, RootConfig } from "./types";
 
 const writeFile = promisify(fs.writeFile);
 
