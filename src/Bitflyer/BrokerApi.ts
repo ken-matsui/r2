@@ -4,14 +4,14 @@ import {
   Balance,
   BalanceResponse,
   BoardResponse,
-  ICancelChildOrderRequest,
-  ICancelChildOrderResponse,
   ChildOrder,
-  IChildOrdersParam,
   ChildOrdersResponse,
   Execution,
-  IExecutionsParam,
   ExecutionsResponse,
+  ICancelChildOrderRequest,
+  ICancelChildOrderResponse,
+  IChildOrdersParam,
+  IExecutionsParam,
   ISendChildOrderRequest,
   SendChildOrderResponse,
 } from "./types";
@@ -60,10 +60,10 @@ export default class BrokerApi {
     const message = n + method + path + body;
     const sign = hmac(this.secret, message);
     const headers = {
-      "Content-Type": "application/json",
       "ACCESS-KEY": this.key,
-      "ACCESS-TIMESTAMP": n,
       "ACCESS-SIGN": sign,
+      "ACCESS-TIMESTAMP": n,
+      "Content-Type": "application/json",
     };
     const init = { method, headers, body };
     return await this.webClient.fetch<R>(path, init);
