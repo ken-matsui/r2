@@ -1,7 +1,7 @@
-import { Broker, IConfigStore } from './types';
-import { inject, injectable } from 'inversify';
-import symbols from './symbols';
-import * as _ from 'lodash';
+import { inject, injectable } from "inversify";
+import * as _ from "lodash";
+import symbols from "./symbols";
+import { Broker, IConfigStore } from "./types";
 
 const MAX = 10;
 const MIN = 1;
@@ -12,24 +12,24 @@ export default class BrokerStabilityTracker {
   private timer;
 
   constructor(@inject(symbols.ConfigStore) private readonly configStore: IConfigStore) {
-    const brokers = this.configStore.config.brokers.map(b => b.broker);
-    this.stabilityMap = new Map<Broker, number>(brokers.map(b => [b, MAX] as [string, number]));
+    const brokers = this.configStore.config.brokers.map((b) => b.broker);
+    this.stabilityMap = new Map<Broker, number>(brokers.map((b) => [b, MAX] as [string, number]));
   }
 
-  async start() {
+  public async start() {
     if (this.configStore.config.stabilityTracker) {
       const interval = this.configStore.config.stabilityTracker.recoveryInterval || 60 * 1000;
       this.timer = setInterval(() => this.recover(), interval);
     }
   }
 
-  async stop() {
+  public async stop() {
     if (this.timer) {
       clearInterval(this.timer);
     }
   }
 
-  decrement(broker: Broker) {
+  public decrement(broker: Broker) {
     if (this.stabilityMap.has(broker)) {
       const counter = this.stability(broker);
       const newValue = counter - 1;
@@ -37,7 +37,7 @@ export default class BrokerStabilityTracker {
     }
   }
 
-  isStable(broker: Broker): boolean {
+  public isStable(broker: Broker): boolean {
     if (!this.stabilityMap.has(broker)) {
       return false;
     }
@@ -49,7 +49,7 @@ export default class BrokerStabilityTracker {
     return counter >= threshold;
   }
 
-  stability(broker: Broker): number {
+  public stability(broker: Broker): number {
     return this.stabilityMap.get(broker) as number;
   }
 
@@ -60,7 +60,7 @@ export default class BrokerStabilityTracker {
   }
 
   private recover() {
-    const brokers = this.configStore.config.brokers.map(b => b.broker);
+    const brokers = this.configStore.config.brokers.map((b) => b.broker);
     for (const broker of brokers) {
       this.increment(broker);
     }
