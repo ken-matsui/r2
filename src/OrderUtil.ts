@@ -1,8 +1,8 @@
-import OrderImpl from './OrderImpl';
-import { splitSymbol } from './util';
-import t from './intl';
-import { format } from 'util';
-import * as _ from 'lodash';
+import * as _ from "lodash";
+import { format } from "util";
+import t from "./intl";
+import OrderImpl from "./OrderImpl";
+import { splitSymbol } from "./util";
 
 export function toExecSummary(order: OrderImpl): string {
   const { baseCcy } = splitSymbol(order.symbol);
@@ -13,7 +13,7 @@ export function toExecSummary(order: OrderImpl): string {
         order.side,
         order.filledSize,
         baseCcy,
-        _.round(order.averageFilledPrice).toLocaleString()
+        _.round(order.averageFilledPrice).toLocaleString(),
       )
     : format(
         t`UnfilledSummary`,
@@ -23,7 +23,7 @@ export function toExecSummary(order: OrderImpl): string {
         baseCcy,
         order.price.toLocaleString(),
         order.pendingSize,
-        baseCcy
+        baseCcy,
       );
 }
 
