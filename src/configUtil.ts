@@ -1,11 +1,11 @@
-import * as path from 'path';
-import * as fs from 'fs';
-import { ConfigRoot, Broker, BrokerConfig } from './types';
-import { readJsonFileSync } from './util';
-import * as _ from 'lodash';
+import * as fs from "fs";
+import * as _ from "lodash";
+import * as path from "path";
+import { Broker, BrokerConfig, ConfigRoot } from "./types";
+import { readJsonFileSync } from "./util";
 
 const defaultValues = {
-  symbol: 'BTC/JPY'
+  symbol: "BTC/JPY",
 };
 
 export function getConfigRoot(): ConfigRoot {
@@ -18,11 +18,11 @@ export function getConfigRoot(): ConfigRoot {
 }
 
 export function getConfigPath(): string {
-  return process.env.NODE_ENV !== 'test' ? `${process.cwd()}/config.json` : `${__dirname}/__tests__/config_test.json`;
+  return process.env.NODE_ENV !== "test" ? `${process.cwd()}/config.json` : `${__dirname}/__tests__/config_test.json`;
 }
 
 export function findBrokerConfig(configRoot: ConfigRoot, broker: Broker): BrokerConfig {
-  const found = configRoot.brokers.find(brokerConfig => brokerConfig.broker === broker);
+  const found = configRoot.brokers.find((brokerConfig) => brokerConfig.broker === broker);
   if (found === undefined) {
     throw new Error(`Unable to find ${broker} in config.`);
   }
