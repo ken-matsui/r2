@@ -1,19 +1,19 @@
-import SpreadAnalyzer from './SpreadAnalyzer';
-import { injectable, inject } from 'inversify';
-import symbols from './symbols';
-import { ISpreadStatTimeSeries, IQuote, IConfigStore } from './types';
-import QuoteAggregator from './QuoteAggregator';
-import { spreadStatToCsv, spreadStatCsvHeader } from './SpreadStatTimeSeries';
-import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
-import { promisify } from 'util';
-import { fork, ChildProcess } from 'child_process';
-import { reportServicePubUrl, reportServiceRepUrl } from './constants';
-import { getLogger } from '@bitr/logger';
-import { cwd } from './util';
-import { Duration, DateTime } from 'luxon';
-import { SnapshotResponder } from './messages';
-import { ZmqPublisher } from '@bitr/zmq';
+import { getLogger } from "@bitr/logger";
+import { ZmqPublisher } from "@bitr/zmq";
+import { ChildProcess, fork } from "child_process";
+import * as fs from "fs";
+import { inject, injectable } from "inversify";
+import { DateTime, Duration } from "luxon";
+import * as mkdirp from "mkdirp";
+import { promisify } from "util";
+import { reportServicePubUrl, reportServiceRepUrl } from "./constants";
+import { SnapshotResponder } from "./messages";
+import QuoteAggregator from "./QuoteAggregator";
+import SpreadAnalyzer from "./SpreadAnalyzer";
+import { spreadStatCsvHeader, spreadStatToCsv } from "./SpreadStatTimeSeries";
+import symbols from "./symbols";
+import { IConfigStore, IQuote, ISpreadStatTimeSeries } from "./types";
+import { cwd } from "./util";
 
 const writeFile = promisify(fs.writeFile);
 
@@ -33,18 +33,18 @@ export default class ReportService {
     private readonly quoteAggregator: QuoteAggregator,
     private readonly spreadAnalyzer: SpreadAnalyzer,
     @inject(symbols.SpreadStatTimeSeries) private readonly spreadStatTimeSeries: ISpreadStatTimeSeries,
-    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
   ) {}
 
-  async start() {
-    this.log.debug('Starting ReportService...');
+  public async start() {
+    this.log.debug("Starting ReportService...");
     mkdirp.sync(this.reportDir);
     if (!fs.existsSync(this.spreadStatReport)) {
-      await writeFile(this.spreadStatReport, spreadStatCsvHeader, { flag: 'a' });
+      await writeFile(this.spreadStatReport, spreadStatCsvHeader, { flag: "a" });
     }
-    this.spreadStatWriteStream = fs.createWriteStream(this.spreadStatReport, { flags: 'a' });
+    this.spreadStatWriteStream = fs.createWriteStream(this.spreadStatReport, { flags: "a" });
     this.handlerRef = this.quoteUpdated.bind(this);
-    this.quoteAggregator.on('quoteUpdated', this.handlerRef);
+    this.quoteAggregator.on("quoteUpdated", this.handlerRef);
     const { analytics } = this.configStore.config;
     if (analytics && analytics.enabled) {
       const duration = Duration.fromObject(analytics.initialHistory);
@@ -53,29 +53,29 @@ export default class ReportService {
       const end = dt.toJSDate();
       const snapshot = await this.spreadStatTimeSeries.query({ start, end });
       this.snapshotResponder = new SnapshotResponder(reportServiceRepUrl, (request, respond) => {
-        if (request && request.type === 'spreadStatSnapshot') {
-          respond({ success: true, data: snapshot.map(s => s.value) });
+        if (request && request.type === "spreadStatSnapshot") {
+          respond({ success: true, data: snapshot.map((s) => s.value) });
         } else {
-          respond({ success: false, reason: 'invalid request' });
+          respond({ success: false, reason: "invalid request" });
         }
       });
       this.streamPublisher = new ZmqPublisher(reportServicePubUrl);
-      this.analyticsProcess = fork(this.analyticsPath, [], { stdio: [0, 1, 2, 'ipc'] });
+      this.analyticsProcess = fork(this.analyticsPath, [], { stdio: [0, 1, 2, "ipc"] });
     }
-    this.log.debug('Started.');
+    this.log.debug("Started.");
   }
 
-  async stop() {
-    this.log.debug('Stopping ReportService...');
-    this.quoteAggregator.removeListener('quoteUpdated', this.handlerRef);
+  public async stop() {
+    this.log.debug("Stopping ReportService...");
+    this.quoteAggregator.removeListener("quoteUpdated", this.handlerRef);
     this.spreadStatWriteStream.close();
     if (this.analyticsProcess) {
-      await promisify(this.analyticsProcess.send).bind(this.analyticsProcess)('stop');
+      await promisify(this.analyticsProcess.send).bind(this.analyticsProcess)("stop");
       this.analyticsProcess.kill();
       this.streamPublisher.dispose();
       this.snapshotResponder.dispose();
     }
-    this.log.debug('Stopped.');
+    this.log.debug("Stopped.");
   }
 
   private async quoteUpdated(quotes: IQuote[]): Promise<void> {
@@ -85,7 +85,7 @@ export default class ReportService {
       await promisify(this.spreadStatWriteStream.write).bind(this.spreadStatWriteStream)(spreadStatToCsv(stat));
       const { analytics } = this.configStore.config;
       if (analytics && analytics.enabled && this.analyticsProcess.connected) {
-        this.streamPublisher.publish('spreadStat', stat);
+        this.streamPublisher.publish("spreadStat", stat);
       }
     }
   }
