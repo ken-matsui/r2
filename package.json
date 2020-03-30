@@ -61,7 +61,7 @@
     "@types/i18next": "^8.4.2",
     "@types/jest": "^21.1.4",
     "@types/jsonwebtoken": "^7.2.3",
-    "@types/lodash": "^4.14.86",
+    "@types/lodash": "^4.14.149",
     "@types/luxon": "^0.2.2",
     "@types/nock": "^8.2.1",
     "@types/node": "^8.0.53",
