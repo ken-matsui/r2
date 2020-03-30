@@ -5,7 +5,7 @@ import BrokerAdapterImpl from '../../Coincheck/BrokerAdapterImpl';
 import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, ConfigRoot, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
-import { NewOrderRequest } from '../../Coincheck/types';
+import { INewOrderRequest } from '../../Coincheck/types';
 import { options } from '@bitr/logger';
 import { createOrder } from '../helper';
 options.enabled = false;

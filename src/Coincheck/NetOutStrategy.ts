@@ -2,9 +2,9 @@ import * as _ from "lodash";
 import { CashMarginType, IOrder, OrderSide, OrderStatus, OrderType } from "../types";
 import { almostEqual, eRound } from "../util";
 import BrokerApi from "./BrokerApi";
-import { CashMarginTypeStrategy, LeveragePosition, NewOrderRequest } from "./types";
+import { ICashMarginTypeStrategy, LeveragePosition, INewOrderRequest } from "./types";
 
-export default class NetOutStrategy implements CashMarginTypeStrategy {
+export default class NetOutStrategy implements ICashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
 
   public async send(order: IOrder): Promise<void> {
@@ -29,7 +29,7 @@ export default class NetOutStrategy implements CashMarginTypeStrategy {
     return eRound(longPosition - shortPosition);
   }
 
-  private async getNetOutRequest(order: IOrder): Promise<NewOrderRequest> {
+  private async getNetOutRequest(order: IOrder): Promise<INewOrderRequest> {
     const openPositions = await this.brokerApi.getAllOpenLeveragePositions();
     const targetSide = order.side === OrderSide.Buy ? "sell" : "buy";
     const candidates = _(openPositions)

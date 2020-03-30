@@ -1,8 +1,8 @@
 import { CashMarginType, IOrder, OrderSide, OrderStatus, OrderType } from "../types";
 import BrokerApi from "./BrokerApi";
-import { CashMarginTypeStrategy } from "./types";
+import { ICashMarginTypeStrategy } from "./types";
 
-export default class CashStrategy implements CashMarginTypeStrategy {
+export default class CashStrategy implements ICashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
 
   public async send(order: IOrder): Promise<void> {

@@ -3,7 +3,7 @@ import NetOutStrategy from '../../Coincheck/NetOutStrategy';
 import BrokerApi from '../../Coincheck/BrokerApi';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
-import { NewOrderRequest } from '../../Coincheck/types';
+import { INewOrderRequest } from '../../Coincheck/types';
 import * as nock from 'nock';
 import { options } from '@bitr/logger';
 import { createOrder } from '../helper';
@@ -45,7 +45,7 @@ describe('NetOutStrategy', () => {
       OrderType.Limit, 
       undefined
     );
-    const request: NewOrderRequest = await strategy.getNetOutRequest(order);
+    const request: INewOrderRequest = await strategy.getNetOutRequest(order);
     expect(request.order_type).toBe('close_short');
     expect(request.amount).toBe(0.010005);
     expect(request.position_id).toBe(2389078);
@@ -65,7 +65,7 @@ describe('NetOutStrategy', () => {
       OrderType.Limit, 
       undefined
     );
-    const request: NewOrderRequest = await strategy.getNetOutRequest(order);
+    const request: INewOrderRequest = await strategy.getNetOutRequest(order);
     expect(request.order_type).toBe('leverage_buy');
     expect(request.amount).toBe(0.02);
     expect(request.position_id).toBe(undefined);
@@ -82,7 +82,7 @@ describe('NetOutStrategy', () => {
       OrderType.Limit, 
       undefined
     );
-    const request: NewOrderRequest = await strategy.getNetOutRequest(order);
+    const request: INewOrderRequest = await strategy.getNetOutRequest(order);
     expect(request.order_type).toBe('leverage_sell');
     expect(request.amount).toBe(0.01);
     expect(request.position_id).toBeUndefined();
@@ -102,7 +102,7 @@ describe('NetOutStrategy', () => {
       OrderType.Market, 
       undefined
     );
-    const request: NewOrderRequest = await strategy.getNetOutRequest(order);
+    const request: INewOrderRequest = await strategy.getNetOutRequest(order);
     expect(request.order_type).toBe('leverage_sell');
     expect(request.amount).toBe(0.01);
     expect(request.position_id).toBeUndefined();

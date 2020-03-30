@@ -7,9 +7,9 @@ import {
   CancelOrderResponse,
   LeverageBalanceResponse,
   LeveragePosition,
-  LeveragePositionsRequest,
+  ILeveragePositionsRequest,
   LeveragePositionsResponse,
-  NewOrderRequest,
+  INewOrderRequest,
   NewOrderResponse,
   OpenOrdersResponse,
   OrderBooksResponse,
@@ -41,10 +41,10 @@ export default class BrokerApi {
     return new OpenOrdersResponse(await this.get<OpenOrdersResponse>(path));
   }
 
-  public async getLeveragePositions(request?: LeveragePositionsRequest): Promise<LeveragePositionsResponse> {
+  public async getLeveragePositions(request?: ILeveragePositionsRequest): Promise<LeveragePositionsResponse> {
     const path = "/api/exchange/leverage/positions";
     return new LeveragePositionsResponse(
-      await this.get<LeveragePositionsResponse, LeveragePositionsRequest>(path, request),
+      await this.get<LeveragePositionsResponse, ILeveragePositionsRequest>(path, request),
     );
   }
 
@@ -53,7 +53,7 @@ export default class BrokerApi {
       return _.cloneDeep(this.leveragePositionsCache);
     }
     let result: LeveragePosition[] = [];
-    const request: LeveragePositionsRequest = { limit, status: "open", order: "desc" };
+    const request: ILeveragePositionsRequest = { limit, status: "open", order: "desc" };
     let reply = await this.getLeveragePositions(request);
     while (reply.data !== undefined && reply.data.length > 0) {
       result = _.concat(result, reply.data);
@@ -73,9 +73,9 @@ export default class BrokerApi {
     return new OrderBooksResponse(await this.webClient.fetch<OrderBooksResponse>(path, undefined, false));
   }
 
-  public async newOrder(request: NewOrderRequest): Promise<NewOrderResponse> {
+  public async newOrder(request: INewOrderRequest): Promise<NewOrderResponse> {
     const path = "/api/exchange/orders";
-    return new NewOrderResponse(await this.post<NewOrderResponse, NewOrderRequest>(path, request));
+    return new NewOrderResponse(await this.post<NewOrderResponse, INewOrderRequest>(path, request));
   }
 
   public async cancelOrder(orderId: string): Promise<CancelOrderResponse> {

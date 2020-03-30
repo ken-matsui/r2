@@ -16,17 +16,17 @@ import BrokerApi from "./BrokerApi";
 import CashStrategy from "./CashStrategy";
 import MarginOpenStrategy from "./MarginOpenStrategy";
 import NetOutStrategy from "./NetOutStrategy";
-import { CashMarginTypeStrategy, OrderBooksResponse } from "./types";
+import { ICashMarginTypeStrategy, OrderBooksResponse } from "./types";
 
 export default class BrokerAdapterImpl implements IBrokerAdapter {
   public readonly broker = "Coincheck";
-  public readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
+  public readonly strategyMap: Map<CashMarginType, ICashMarginTypeStrategy>;
   private readonly brokerApi: BrokerApi;
   private readonly log = getLogger("Coincheck.BrokerAdapter");
 
   constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
-    this.strategyMap = new Map<CashMarginType, CashMarginTypeStrategy>([
+    this.strategyMap = new Map<CashMarginType, ICashMarginTypeStrategy>([
       [CashMarginType.Cash, new CashStrategy(this.brokerApi)],
       [CashMarginType.MarginOpen, new MarginOpenStrategy(this.brokerApi)],
       [CashMarginType.NetOut, new NetOutStrategy(this.brokerApi)],
