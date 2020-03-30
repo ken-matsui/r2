@@ -1,7 +1,7 @@
 import {
   Broker,
   QuoteSide,
-  ConfigRoot,
+  RootConfig,
   IConfigStore,
   CashMarginType,
   OrderStatus,
@@ -32,7 +32,7 @@ const chronoDB = new ChronoDB(`${__dirname}/datastore/1`);
 const activePairStore = getActivePairStore(chronoDB);
 
 let quoteAggregator,
-  config: ConfigRoot,
+  config: RootConfig,
   configStore,
   positionMap,
   positionService,
@@ -77,7 +77,7 @@ describe('Arbitrager', () => {
           commissionPercent: 0
         }
       ]
-    } as ConfigRoot;
+    } as RootConfig;
     configStore = { config } as IConfigStore;
     positionMap = {
       Coincheck: {

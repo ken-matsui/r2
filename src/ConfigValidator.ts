@@ -2,11 +2,11 @@
 import * as _ from "lodash";
 import { findBrokerConfig } from "./configUtil";
 import t from "./intl";
-import { BrokerConfig, CashMarginType, ConfigRoot } from "./types";
+import { BrokerConfig, CashMarginType, RootConfig } from "./types";
 
 @injectable()
 export default class ConfigValidator {
-  public validate(config: ConfigRoot): void {
+  public validate(config: RootConfig): void {
     const enabledBrokers = config.brokers.filter((b) => b.enabled);
     this.throwIf(enabledBrokers.length < 2, t`AtLeastTwoBrokersMustBeEnabled`);
     this.mustBePositive(config.iterationInterval, "iterationInterval");

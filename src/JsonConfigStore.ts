@@ -9,7 +9,7 @@ import { getConfigPath, getConfigRoot } from "./configUtil";
 import ConfigValidator from "./ConfigValidator";
 import { configStoreSocketUrl } from "./constants";
 import { ConfigResponder, IConfigRequest, IConfigResponse } from "./messages";
-import { ConfigRoot, IConfigStore } from "./types";
+import { RootConfig, IConfigStore } from "./types";
 
 const writeFile = promisify(fs.writeFile);
 
@@ -19,7 +19,7 @@ export default class JsonConfigStore extends EventEmitter implements IConfigStor
   private timer: NodeJS.Timer;
   private readonly responder: ConfigResponder;
   private readonly TTL = 5 * 1000;
-  private cache?: ConfigRoot;
+  private cache?: RootConfig;
 
   constructor(private readonly configValidator: ConfigValidator) {
     super();
@@ -28,7 +28,7 @@ export default class JsonConfigStore extends EventEmitter implements IConfigStor
     );
   }
 
-  get config(): ConfigRoot {
+  get config(): RootConfig {
     if (this.cache) {
       return this.cache;
     }
@@ -38,7 +38,7 @@ export default class JsonConfigStore extends EventEmitter implements IConfigStor
     return config;
   }
 
-  public async set(config: ConfigRoot) {
+  public async set(config: RootConfig) {
     this.configValidator.validate(config);
     await writeFile(getConfigPath(), JSON.stringify(config, undefined, 2));
     this.updateCache(config);
@@ -77,7 +77,7 @@ export default class JsonConfigStore extends EventEmitter implements IConfigStor
     }
   }
 
-  private updateCache(config: ConfigRoot) {
+  private updateCache(config: RootConfig) {
     this.cache = config;
     clearTimeout(this.timer);
     this.timer = setTimeout(() => (this.cache = undefined), this.TTL);

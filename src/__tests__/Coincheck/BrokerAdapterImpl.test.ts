@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Coincheck/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, ConfigRoot, IBrokerConfigType } from '../../types';
+import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, RootConfig, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
 import { INewOrderRequest } from '../../Coincheck/types';
@@ -59,7 +59,7 @@ describe('Coincheck BrokerAdapter', () => {
   test('getBtcPosition with invalid cashMarginType', async () => {
     const config = {
       brokers: [{ broker: 'Coincheck', key: '', secret: '', cashMarginType: 'Invalid' as CashMarginType }]
-    } as ConfigRoot;
+    } as RootConfig;
     const target = new BrokerAdapterImpl(brokerConfig);
     try {
       await target.getBtcPosition();

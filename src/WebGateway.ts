@@ -13,7 +13,7 @@ import PositionService from "./PositionService";
 import QuoteAggregator from "./QuoteAggregator";
 import symbols from "./symbols";
 import {
-  ConfigRoot,
+  RootConfig,
   IBrokerMap,
   IBrokerPosition,
   IConfigStore,
@@ -133,11 +133,11 @@ export default class WebGateway {
     this.broadcast("orderFinalized", order);
   }
 
-  private configUpdated(config: ConfigRoot) {
+  private configUpdated(config: RootConfig) {
     this.broadcast("configUpdated", this.sanitize(config));
   }
 
-  private sanitize(config: ConfigRoot): ConfigRoot {
+  private sanitize(config: RootConfig): RootConfig {
     const copy = _.cloneDeep(config);
     for (const brokerConfig of copy.brokers) {
       delete brokerConfig.key;

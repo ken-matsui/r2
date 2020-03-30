@@ -2,7 +2,7 @@
 import { EventEmitter } from "events";
 import OrderImpl from "../OrderImpl";
 import { Broker, IOrder, IQuote } from "./common";
-import { ConfigRoot } from "./config";
+import { RootConfig } from "./configs";
 
 export interface IBrokerAdapter {
   getPositions?: () => Promise<Map<string, number>>;
@@ -63,7 +63,7 @@ export interface ILimitCheckResult {
 }
 
 export interface IConfigStore extends EventEmitter {
-  config: ConfigRoot;
+  config: RootConfig;
 }
 
 export interface IBrokerPosition {

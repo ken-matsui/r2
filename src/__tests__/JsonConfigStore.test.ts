@@ -6,7 +6,7 @@ import { Socket, socket } from "zeromq";
 import { configStoreSocketUrl } from "../constants";
 import JsonConfigStore from "../JsonConfigStore";
 import { ConfigRequester } from "../messages";
-import { Broker, ConfigRoot, IConfigStore } from "../types";
+import { Broker, RootConfig, IConfigStore } from "../types";
 import { delay } from "../util";
 options.enabled = false;
 
@@ -20,7 +20,7 @@ function parseBuffer<T>(buffer: Buffer): T | undefined {
 
 describe("JsonConfigStore", () => {
   test("JsonConfigStore", async () => {
-    const validator = { validate: (config: ConfigRoot) => true };
+    const validator = { validate: (config: RootConfig) => true };
     const store = new JsonConfigStore(validator);
     store.TTL = 5;
     expect(store.config.language).toBe("en");
@@ -41,7 +41,7 @@ describe("JsonConfigStore", () => {
   test("set", async () => {
     let store: JsonConfigStore;
     try {
-      const validator = { validate: (config: ConfigRoot) => true };
+      const validator = { validate: (config: RootConfig) => true };
       store = new JsonConfigStore(validator);
       store.TTL = 5;
       expect(store.config.minSize).toBe(0.01);
@@ -63,7 +63,7 @@ describe("JsonConfigStore", () => {
     let store: JsonConfigStore;
     let client: ConfigRequester;
     try {
-      const validator = { validate: (config: ConfigRoot) => true };
+      const validator = { validate: (config: RootConfig) => true };
       store = new JsonConfigStore(validator);
       store.TTL = 5;
       expect(store.config.minSize).toBe(0.01);
@@ -88,7 +88,7 @@ describe("JsonConfigStore", () => {
     let store: JsonConfigStore;
     let client: Socket;
     try {
-      const validator = { validate: (config: ConfigRoot) => true };
+      const validator = { validate: (config: RootConfig) => true };
       store = new JsonConfigStore(validator);
       store.TTL = 5;
       expect(store.config.minSize).toBe(0.01);
@@ -118,7 +118,7 @@ describe("JsonConfigStore", () => {
     let client: ConfigRequester;
     try {
       const validator = {
-        validate: (config: ConfigRoot) => {
+        validate: (config: RootConfig) => {
           if (config.maxNetExposure <= 0) {
             throw new Error();
           }
@@ -149,7 +149,7 @@ describe("JsonConfigStore", () => {
     let store: JsonConfigStore;
     let client: ConfigRequester;
     try {
-      const validator = { validate: (config: ConfigRoot) => true };
+      const validator = { validate: (config: RootConfig) => true };
       store = new JsonConfigStore(validator);
       store.TTL = 5;
       expect(store.config.minSize).toBe(0.01);
@@ -174,7 +174,7 @@ describe("JsonConfigStore", () => {
     let store: JsonConfigStore;
     let client: ConfigRequester;
     try {
-      const validator = { validate: (config: ConfigRoot) => true };
+      const validator = { validate: (config: RootConfig) => true };
       store = new JsonConfigStore(validator);
       store.TTL = 5;
       expect(store.config.minSize).toBe(0.01);

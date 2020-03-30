@@ -1,5 +1,5 @@
 import { ZmqRequester, ZmqResponder } from "@bitr/zmq";
-import { ConfigRoot, ISpreadStat } from "./types";
+import { RootConfig, ISpreadStat } from "./types";
 
 export interface IGenericRequest<T> {
   type: string;
@@ -13,7 +13,7 @@ export interface IGenericResponse<T> {
 }
 
 export interface IConfigRequest extends IGenericRequest<any> {}
-export interface IConfigResponse extends IGenericResponse<ConfigRoot> {}
+export interface IConfigResponse extends IGenericResponse<RootConfig> {}
 export class ConfigRequester extends ZmqRequester<IConfigRequest, IConfigResponse> {}
 export class ConfigResponder extends ZmqResponder<IConfigRequest, IConfigResponse> {}
 

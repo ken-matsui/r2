@@ -1,9 +1,9 @@
 import ConfigValidator from '../ConfigValidator';
-import { ConfigRoot } from '../types';
+import { RootConfig } from '../types';
 import { options } from '@bitr/logger';
 options.enabled = false;
 
-const config: ConfigRoot = require('./config_test.json');
+const config: RootConfig = require('./config_test.json');
 
 describe('ConfigValidator', () => {
   test('validate valid config', () => {
