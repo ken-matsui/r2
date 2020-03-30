@@ -135,11 +135,11 @@ export default class OppotunitySearcher extends EventEmitter {
       );
     }
     return {
-      entryProfit,
-      entryProfitRatio,
       currentExitCost,
       currentExitCostRatio,
       currentExitNetProfitRatio,
+      entryProfit,
+      entryProfitRatio,
     };
   }
 
