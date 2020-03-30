@@ -1,8 +1,8 @@
-import * as i18next from 'i18next';
-import { en, ja } from './stringResources';
-import { getConfigRoot } from './configUtil';
+import * as i18next from "i18next";
+import { getConfigRoot } from "./configUtil";
+import { en, ja } from "./stringResources";
 
-let lng = 'en';
+let lng = "en";
 
 try {
   lng = getConfigRoot().language;
@@ -11,16 +11,16 @@ try {
 }
 
 i18next.init({
+  fallbackLng: "en",
   lng,
-  fallbackLng: 'en',
   resources: {
     en: {
-      translation: en
+      translation: en,
     },
     ja: {
-      translation: ja
-    }
-  }
+      translation: ja,
+    },
+  },
 });
 
 export default function translateTaggedTemplate(strings: TemplateStringsArray, ...keys: string[]): string {
