@@ -1,16 +1,16 @@
-import fetch, { RequestInit as FetchRequestInit } from 'node-fetch';
-import { getLogger } from '@bitr/logger';
+import { getLogger } from "@bitr/logger";
+import fetch, { RequestInit as FetchRequestInit } from "node-fetch";
 
 export default class WebClient {
-  static fetchTimeout = 5000;
-  private readonly log = getLogger('WebClient');
+  private static fetchTimeout = 5000;
+  private readonly log = getLogger("WebClient");
 
   constructor(public readonly baseUrl: string) {}
 
-  async fetch<T>(
+  public async fetch<T>(
     path: string,
     init: FetchRequestInit = { timeout: WebClient.fetchTimeout },
-    verbose: boolean = true
+    verbose: boolean = true,
   ): Promise<T> {
     const url = this.baseUrl + path;
     this.log.debug(`Sending HTTP request... URL: ${url} Request: ${JSON.stringify(init)}`);
