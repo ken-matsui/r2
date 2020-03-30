@@ -1,24 +1,24 @@
-﻿import { getLogger } from '@bitr/logger';
-import t from './intl';
-import 'reflect-metadata';
-import symbols from './symbols';
-import { IBrokerAdapter, IConfigStore } from './types';
-import { Container } from 'inversify';
-import { closeChronoDB } from './chrono';
-import QuoteAggregator from './QuoteAggregator';
-import PositionService from './PositionService';
-import Arbitrager from './Arbitrager';
-import ReportService from './ReportService';
-import BrokerStabilityTracker from './BrokerStabilityTracker';
-import WebGateway from './WebGateway';
+﻿import { getLogger } from "@bitr/logger";
+import { Container } from "inversify";
+import "reflect-metadata";
+import Arbitrager from "./Arbitrager";
+import BrokerStabilityTracker from "./BrokerStabilityTracker";
+import { closeChronoDB } from "./chrono";
+import t from "./intl";
+import PositionService from "./PositionService";
+import QuoteAggregator from "./QuoteAggregator";
+import ReportService from "./ReportService";
+import symbols from "./symbols";
+import { IBrokerAdapter, IConfigStore } from "./types";
+import WebGateway from "./WebGateway";
 
 export default class AppRoot {
   private readonly log = getLogger(this.constructor.name);
-  private services: { start: () => Promise<void>; stop: () => Promise<void> }[];
+  private services: Array<{ start: () => Promise<void>; stop: () => Promise<void> }>;
 
   constructor(private readonly ioc: Container) {}
 
-  async start(): Promise<void> {
+  public async start(): Promise<void> {
     try {
       this.log.info(t`StartingTheService`);
       await this.bindBrokers();
@@ -28,7 +28,7 @@ export default class AppRoot {
         this.ioc.get(Arbitrager),
         this.ioc.get(ReportService),
         this.ioc.get(BrokerStabilityTracker),
-        this.ioc.get(WebGateway)
+        this.ioc.get(WebGateway),
       ];
       for (const service of this.services) {
         await service.start();
@@ -40,7 +40,7 @@ export default class AppRoot {
     }
   }
 
-  async stop(): Promise<void> {
+  public async stop(): Promise<void> {
     try {
       this.log.info(t`StoppingTheService`);
       for (const service of this.services.slice().reverse()) {
@@ -57,7 +57,7 @@ export default class AppRoot {
   private async bindBrokers(): Promise<void> {
     const configStore = this.ioc.get<IConfigStore>(symbols.ConfigStore);
     const brokerConfigs = configStore.config.brokers;
-    const bindTasks = brokerConfigs.map(async brokerConfig => {
+    const bindTasks = brokerConfigs.map(async (brokerConfig) => {
       const brokerName = brokerConfig.broker;
       const brokerModule = brokerConfig.npmPath
         ? await this.tryImport(brokerConfig.npmPath)
