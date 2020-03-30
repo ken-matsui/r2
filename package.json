@@ -4,12 +4,18 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "prestart": "rimraf dist && tsc",
+    "prestart": "npm run build",
     "start": "node ./dist | node ./dist/transport",
+
     "test": "npm run cov && cat ./coverage/lcov.info | coveralls",
+    "posttest": "npm run lint",
     "jest": "jest --runInBand",
     "cov": "jest --runInBand --coverage",
     "lint": "tslint -p .",
+
+    "build": "rimraf dist && tsc",
+    "deploy": "gcloud app deploy",
+
     "clearPairs": "ts-node ./tools/clearPairs.ts",
     "getBalance": "ts-node ./tools/getBalance.ts",
     "closeCcPosition": "ts-node ./tools/closeCcPosition.ts",
