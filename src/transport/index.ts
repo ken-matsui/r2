@@ -1,21 +1,21 @@
-import { pretty, splitToJson } from './transform';
-import * as fs from 'fs';
-import SlackIntegration from './SlackIntegration';
-import LineIntegration from './LineIntegration';
-import { SlackConfig, LineConfig } from '../types';
-import { getConfigRoot } from '../configUtil';
-import * as mkdirp from 'mkdirp';
-import * as _ from 'lodash';
-import * as WebSocket from 'ws';
-import { wssLogPort } from '../constants';
-import * as express from 'express';
-import { Server as httpServer } from 'http';
+import * as express from "express";
+import * as fs from "fs";
+import { Server as httpServer } from "http";
+import * as _ from "lodash";
+import * as mkdirp from "mkdirp";
+import * as WebSocket from "ws";
+import { getConfigRoot } from "../configUtil";
+import { wssLogPort } from "../constants";
+import { LineConfig, SlackConfig } from "../types";
+import LineIntegration from "./LineIntegration";
+import SlackIntegration from "./SlackIntegration";
+import { pretty, splitToJson } from "./transform";
 
 let wss: WebSocket.Server;
 let app: express.Express;
 let server: httpServer;
 
-process.on('SIGINT', () => {
+process.on("SIGINT", () => {
   if (wss) {
     wss.close();
   }
@@ -24,7 +24,7 @@ process.on('SIGINT', () => {
   }
 });
 
-const logdir = './logs';
+const logdir = "./logs";
 mkdirp.sync(logdir);
 
 let configRoot;
@@ -36,27 +36,47 @@ try {
 }
 
 // console output
-process.stdin.pipe(pretty({ colorize: true, withLabel: false, debug: false, hidden: false })).pipe(process.stdout);
+process.stdin.pipe(
+    pretty({
+      colorize: true,
+      debug: false,
+      hidden: false,
+      withLabel: false,
+    }),
+).pipe(process.stdout);
 
 // debug.log
-const debugFile = fs.createWriteStream('logs/debug.log', { flags: 'a' });
-process.stdin.pipe(pretty({ colorize: false, withLabel: true, debug: true, hidden: false })).pipe(debugFile);
+const debugFile = fs.createWriteStream("logs/debug.log", { flags: "a" });
+process.stdin.pipe(
+    pretty({
+      colorize: false,
+      debug: true,
+      hidden: false,
+      withLabel: true,
+    }),
+).pipe(debugFile);
 
 // info.log
-const infoTransform = process.stdin.pipe(pretty({ colorize: false, withLabel: true, debug: false, hidden: false }));
-const infoFile = fs.createWriteStream('logs/info.log', { flags: 'a' });
+const infoTransform = process.stdin.pipe(
+    pretty({
+      colorize: false,
+      debug: false,
+      hidden: false,
+      withLabel: true,
+    }));
+const infoFile = fs.createWriteStream("logs/info.log", { flags: "a" });
 infoTransform.pipe(infoFile);
 
 // notification integrations
 if (configRoot) {
-  const slackConfig = _.get(configRoot, 'logging.slack');
-  const lineConfig = _.get(configRoot, 'logging.line');
+  const slackConfig = _.get(configRoot, "logging.slack");
+  const lineConfig = _.get(configRoot, "logging.line");
   addIntegration(SlackIntegration, slackConfig);
   addIntegration(LineIntegration, lineConfig);
 }
 
 // websocket integration
-const webGatewayConfig = _.get(configRoot, 'webGateway');
+const webGatewayConfig = _.get(configRoot, "webGateway");
 if (webGatewayConfig && webGatewayConfig.enabled) {
   const clients: WebSocket[] = [];
   const wsTransform = process.stdin.pipe(splitToJson());
@@ -65,18 +85,18 @@ if (webGatewayConfig && webGatewayConfig.enabled) {
     _.noop();
   });
   wss = new WebSocket.Server({ server });
-  wss.on('connection', ws => {
-    ws.on('error', err => {
+  wss.on("connection", (ws) => {
+    ws.on("error", () => {
       _.noop();
     });
     clients.push(ws);
   });
-  wsTransform.on('data', line => {
+  wsTransform.on("data", (line) => {
     if (!line) {
       return;
     }
     try {
-      broadcast(clients, 'log', line);
+      broadcast(clients, "log", line);
     } catch (err) {
       _.noop();
     }
@@ -86,7 +106,7 @@ if (webGatewayConfig && webGatewayConfig.enabled) {
 function broadcast(clients: WebSocket[], type: string, body: any) {
   for (const client of clients) {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify({ type, body }), err => {
+      client.send(JSON.stringify({ type, body }), (err) => {
         if (err) {
           _.pull(clients, client);
         }
@@ -97,10 +117,10 @@ function broadcast(clients: WebSocket[], type: string, body: any) {
 
 function addIntegration(
   Integration: { new (config: any): SlackIntegration | LineIntegration },
-  config: SlackConfig | LineConfig | undefined
+  config: SlackConfig | LineConfig | undefined,
 ): void {
   if (config && config.enabled) {
     const integration = new Integration(config);
-    infoTransform.on('data', line => integration.handler(line as string));
+    infoTransform.on("data", (line) => integration.handler(line as string));
   }
 }
