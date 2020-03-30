@@ -4,15 +4,15 @@ import {
   Balance,
   BalanceResponse,
   BoardResponse,
-  CancelChildOrderRequest,
-  CancelChildOrderResponse,
+  ICancelChildOrderRequest,
+  ICancelChildOrderResponse,
   ChildOrder,
-  ChildOrdersParam,
+  IChildOrdersParam,
   ChildOrdersResponse,
   Execution,
-  ExecutionsParam,
+  IExecutionsParam,
   ExecutionsResponse,
-  SendChildOrderRequest,
+  ISendChildOrderRequest,
   SendChildOrderResponse,
 } from "./types";
 
@@ -22,25 +22,25 @@ export default class BrokerApi {
 
   constructor(private readonly key: string, private readonly secret: string) {}
 
-  public async sendChildOrder(request: SendChildOrderRequest): Promise<SendChildOrderResponse> {
+  public async sendChildOrder(request: ISendChildOrderRequest): Promise<SendChildOrderResponse> {
     const path = "/v1/me/sendchildorder";
-    return new SendChildOrderResponse(await this.post<SendChildOrderResponse, SendChildOrderRequest>(path, request));
+    return new SendChildOrderResponse(await this.post<SendChildOrderResponse, ISendChildOrderRequest>(path, request));
   }
 
-  public async cancelChildOrder(request: CancelChildOrderRequest): Promise<CancelChildOrderResponse> {
+  public async cancelChildOrder(request: ICancelChildOrderRequest): Promise<ICancelChildOrderResponse> {
     const path = "/v1/me/cancelchildorder";
-    return await this.post<CancelChildOrderResponse, CancelChildOrderRequest>(path, request);
+    return await this.post<ICancelChildOrderResponse, ICancelChildOrderRequest>(path, request);
   }
 
-  public async getChildOrders(param: ChildOrdersParam): Promise<ChildOrdersResponse> {
+  public async getChildOrders(param: IChildOrdersParam): Promise<ChildOrdersResponse> {
     const path = "/v1/me/getchildorders";
-    const response = await this.get<ChildOrdersResponse, ChildOrdersParam>(path, param);
+    const response = await this.get<ChildOrdersResponse, IChildOrdersParam>(path, param);
     return response.map((x) => new ChildOrder(x));
   }
 
-  public async getExecutions(param: ExecutionsParam): Promise<ExecutionsResponse> {
+  public async getExecutions(param: IExecutionsParam): Promise<ExecutionsResponse> {
     const path = "/v1/me/getexecutions";
-    const response = await this.get<ExecutionsResponse, ExecutionsParam>(path, param);
+    const response = await this.get<ExecutionsResponse, IExecutionsParam>(path, param);
     return response.map((x) => new Execution(x));
   }
 

@@ -1,22 +1,21 @@
-// tslint:disable:variable-name
-import { Castable, cast, element } from '@bitr/castable';
+import { cast, Castable, element } from "@bitr/castable";
 
 class PriceSizePair extends Castable {
-  @cast price: number;
-  @cast size: number;
+  @cast public price: number;
+  @cast public size: number;
 }
 
 export class BoardResponse extends Castable {
-  @cast mid_price: number;
+  @cast public midPrice: number;
   @cast
   @element(PriceSizePair)
-  bids: PriceSizePair[];
+  public bids: PriceSizePair[];
   @cast
   @element(PriceSizePair)
-  asks: PriceSizePair[];
+  public asks: PriceSizePair[];
 }
 
-export interface SendChildOrderRequest {
+export interface ISendChildOrderRequest {
   product_code: string;
   child_order_type: string;
   side: string;
@@ -27,18 +26,18 @@ export interface SendChildOrderRequest {
 }
 
 export class SendChildOrderResponse extends Castable {
-  @cast child_order_acceptance_id: string;
+  @cast public child_order_acceptance_id: string;
 }
 
-export interface CancelChildOrderRequest {
+export interface ICancelChildOrderRequest {
   product_code: string;
   child_order_acceptance_id?: string;
   child_order_id?: string;
 }
 
-export interface CancelChildOrderResponse {}
+export interface ICancelChildOrderResponse {}
 
-export interface ExecutionsParam {
+export interface IExecutionsParam {
   product_code?: string;
   count?: number;
   before?: number;
@@ -48,27 +47,27 @@ export interface ExecutionsParam {
 }
 
 export class Execution extends Castable {
-  @cast id: number;
-  @cast child_order_id: string;
-  @cast side: string;
-  @cast price: number;
-  @cast size: number;
-  @cast commission: number;
-  @cast(Date) exec_date: Date;
-  @cast child_order_acceptance_id: string;
+  @cast public id: number;
+  @cast public child_order_id: string;
+  @cast public side: string;
+  @cast public price: number;
+  @cast public size: number;
+  @cast public commission: number;
+  @cast(Date) public exec_date: Date;
+  @cast public child_order_acceptance_id: string;
 }
 
 export type ExecutionsResponse = Execution[];
 
 export class Balance extends Castable {
-  @cast currency_code: string;
-  @cast amount: number;
-  @cast available: number;
+  @cast public currency_code: string;
+  @cast public amount: number;
+  @cast public available: number;
 }
 
 export type BalanceResponse = Balance[];
 
-export interface ChildOrdersParam {
+export interface IChildOrdersParam {
   product_code?: string;
   count?: number;
   before?: number;
@@ -80,22 +79,22 @@ export interface ChildOrdersParam {
 }
 
 export class ChildOrder extends Castable {
-  @cast id: number;
-  @cast child_order_id: string;
-  @cast product_code: string;
-  @cast side: string;
-  @cast child_order_type: string;
-  @cast price: number;
-  @cast average_price: number;
-  @cast size: number;
-  @cast child_order_state: string;
-  @cast(Date) expire_date: Date;
-  @cast(Date) child_order_date: Date;
-  @cast child_order_acceptance_id: string;
-  @cast outstanding_size: number;
-  @cast cancel_size: number;
-  @cast executed_size: number;
-  @cast total_commission: number;
+  @cast public id: number;
+  @cast public child_order_id: string;
+  @cast public product_code: string;
+  @cast public side: string;
+  @cast public child_order_type: string;
+  @cast public price: number;
+  @cast public average_price: number;
+  @cast public size: number;
+  @cast public child_order_state: string;
+  @cast(Date) public expire_date: Date;
+  @cast(Date) public child_order_date: Date;
+  @cast public child_order_acceptance_id: string;
+  @cast public outstanding_size: number;
+  @cast public cancel_size: number;
+  @cast public executed_size: number;
+  @cast public total_commission: number;
 }
 
 export type ChildOrdersResponse = ChildOrder[];

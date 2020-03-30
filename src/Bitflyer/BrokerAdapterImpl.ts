@@ -15,7 +15,7 @@ import {
 } from "../types";
 import { eRound, toExecution } from "../util";
 import BrokerApi from "./BrokerApi";
-import { BoardResponse, ChildOrder, ChildOrdersParam, SendChildOrderRequest } from "./types";
+import { BoardResponse, ChildOrder, IChildOrdersParam, ISendChildOrderRequest } from "./types";
 
 export default class BrokerAdapterImpl implements IBrokerAdapter {
   public readonly broker = "Bitflyer";
@@ -40,7 +40,7 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
 
   public async refresh(order: IOrder): Promise<void> {
     const orderId = order.brokerOrderId;
-    const request: ChildOrdersParam = { child_order_acceptance_id: orderId };
+    const request: IChildOrdersParam = { child_order_acceptance_id: orderId };
     const reply = await this.brokerApi.getChildOrders(request);
     const childOrder = reply[0];
     if (childOrder === undefined) {
@@ -91,7 +91,7 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     return this.mapToQuote(response);
   }
 
-  private mapOrderToSendChildOrderRequest(order: IOrder): SendChildOrderRequest {
+  private mapOrderToSendChildOrderRequest(order: IOrder): ISendChildOrderRequest {
     if (order.cashMarginType !== CashMarginType.Cash) {
       throw new Error("Not implemented.");
     }
