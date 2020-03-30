@@ -110,14 +110,14 @@ export default class PairTrader extends EventEmitter {
      ? _.round(quote.price * (1 - config.acceptablePriceRange / 100)) as number
      : quote.price;
     const order = new OrderImpl({
+      symbol: this.configStore.config.symbol,
       broker: quote.broker,
-      cashMarginType,
-      leverageLevel,
-      price: orderPrice,
       side: orderSide,
       size: targetVolume,
-      symbol: this.configStore.config.symbol,
+      price: orderPrice,
+      cashMarginType,
       type: orderType,
+      leverageLevel,
     });
     await this.brokerAdapterRouter.send(order);
     return order;
