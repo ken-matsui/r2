@@ -1,9 +1,9 @@
 const symbols = {
-  ConfigStore: Symbol('ConfigStore'),  
-  BrokerAdapter: Symbol('BrokerAdapter'),
-  ActivePairStore: Symbol('ActivePairStore'),
-  SpreadStatTimeSeries: Symbol('SpreadStatTimeSeries'),
-  HistoricalOrderStore: Symbol('HistoricalOrderStore')
+  ActivePairStore: Symbol("ActivePairStore"),
+  BrokerAdapter: Symbol("BrokerAdapter"),
+  ConfigStore: Symbol("ConfigStore"),
+  HistoricalOrderStore: Symbol("HistoricalOrderStore"),
+  SpreadStatTimeSeries: Symbol("SpreadStatTimeSeries"),
 };
 
 export default symbols;
