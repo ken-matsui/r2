@@ -1,37 +1,37 @@
-﻿import {
+﻿import Decimal from "decimal.js";
+import * as _ from "lodash";
+import {
+  CashMarginType,
   IBrokerAdapter,
+  IBrokerConfigType,
+  IExecution,
+  IOrder,
+  IQuote,
+  OrderSide,
   OrderStatus,
   OrderType,
-  OrderSide,
-  CashMarginType,
   QuoteSide,
-  IOrder,
-  IExecution,
-  IQuote,
-  IBrokerConfigType
-} from '../types';
-import BrokerApi from './BrokerApi';
-import * as _ from 'lodash';
-import { PriceLevelsResponse, SendOrderRequest, OrdersResponse, CashMarginTypeStrategy } from './types';
-import { timestampToDate, toExecution, toQuote } from '../util';
-import Decimal from 'decimal.js';
-import CashStrategy from './CashStrategy';
-import NetOutStrategy from './NetOutStrategy';
+} from "../types";
+import { timestampToDate, toExecution, toQuote } from "../util";
+import BrokerApi from "./BrokerApi";
+import CashStrategy from "./CashStrategy";
+import NetOutStrategy from "./NetOutStrategy";
+import { CashMarginTypeStrategy, OrdersResponse, PriceLevelsResponse, SendOrderRequest } from "./types";
 
 export default class BrokerAdapterImpl implements IBrokerAdapter {
+  public readonly broker = "Quoine";
+  public readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
   private readonly brokerApi: BrokerApi;
-  readonly broker = 'Quoine';
-  readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
 
   constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
     this.strategyMap = new Map<CashMarginType, CashMarginTypeStrategy>([
       [CashMarginType.Cash, new CashStrategy(this.brokerApi)],
-      [CashMarginType.NetOut, new NetOutStrategy(this.brokerApi)]
+      [CashMarginType.NetOut, new NetOutStrategy(this.brokerApi)],
     ]);
   }
 
-  async send(order: IOrder): Promise<void> {
+  public async send(order: IOrder): Promise<void> {
     if (order.broker !== this.broker) {
       throw new Error();
     }
@@ -43,18 +43,18 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     order.lastUpdated = new Date();
   }
 
-  async refresh(order: IOrder): Promise<void> {
+  public async refresh(order: IOrder): Promise<void> {
     const ordersResponse = await this.brokerApi.getOrders(order.brokerOrderId);
     this.setOrderFields(ordersResponse, order);
   }
 
-  async cancel(order: IOrder): Promise<void> {
+  public async cancel(order: IOrder): Promise<void> {
     await this.brokerApi.cancelOrder(order.brokerOrderId);
     order.lastUpdated = new Date();
     order.status = OrderStatus.Canceled;
   }
 
-  async getBtcPosition(): Promise<number> {
+  public async getBtcPosition(): Promise<number> {
     const strategy = this.strategyMap.get(this.config.cashMarginType);
     if (strategy === undefined) {
       throw new Error(`Unable to find a strategy for ${this.config.cashMarginType}.`);
@@ -62,7 +62,7 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     return await strategy.getBtcPosition();
   }
 
-  async fetchQuotes(): Promise<IQuote[]> {
+  public async fetchQuotes(): Promise<IQuote[]> {
     const response = await this.brokerApi.getPriceLevels();
     return this.mapToQuote(response);
   }
@@ -70,26 +70,26 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
   private mapOrderToSendOrderRequest(order: IOrder): SendOrderRequest {
     let productId: string;
     switch (order.symbol) {
-      case 'BTC/JPY':
-        productId = '5';
+      case "BTC/JPY":
+        productId = "5";
         break;
       default:
-        throw new Error('Not implemented.');
+        throw new Error("Not implemented.");
     }
 
     let orderType: string;
     let price: number = 0;
     switch (order.type) {
       case OrderType.Limit:
-        orderType = 'limit';
+        orderType = "limit";
         price = order.price;
         break;
       case OrderType.Market:
-        orderType = 'market';
+        orderType = "market";
         price = 0;
         break;
       default:
-        throw new Error('Not implemented.');
+        throw new Error("Not implemented.");
     }
 
     let orderDirection: string | undefined;
@@ -100,23 +100,23 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
         leverageLevel = undefined;
         break;
       case CashMarginType.NetOut:
-        orderDirection = 'netout';
+        orderDirection = "netout";
         leverageLevel = order.leverageLevel;
         break;
       default:
-        throw new Error('Not implemented.');
+        throw new Error("Not implemented.");
     }
 
     return {
       order: {
-        price,
-        product_id: productId,
+        leverage_level: leverageLevel,
         order_direction: orderDirection,
         order_type: orderType,
-        side: OrderSide[order.side].toLowerCase(),
+        price,
+        product_id: productId,
         quantity: order.size,
-        leverage_level: leverageLevel
-      }
+        side: OrderSide[order.side].toLowerCase(),
+      },
     };
   }
 
@@ -129,7 +129,7 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
     } else if (order.filledSize > 0) {
       order.status = OrderStatus.PartiallyFilled;
     }
-    order.executions = _.map(ordersResponse.executions, x => {
+    order.executions = _.map(ordersResponse.executions, (x) => {
       const e = toExecution(order);
       e.price = Number(x.price);
       e.size = Number(x.quantity);
@@ -142,11 +142,11 @@ export default class BrokerAdapterImpl implements IBrokerAdapter {
   private mapToQuote(priceLevelsResponse: PriceLevelsResponse): IQuote[] {
     const asks = _(priceLevelsResponse.sell_price_levels)
       .take(100)
-      .map(q => toQuote(this.broker, QuoteSide.Ask, Number(q[0]), Number(q[1])))
+      .map((q) => toQuote(this.broker, QuoteSide.Ask, Number(q[0]), Number(q[1])))
       .value();
     const bids = _(priceLevelsResponse.buy_price_levels)
       .take(100)
-      .map(q => toQuote(this.broker, QuoteSide.Bid, Number(q[0]), Number(q[1])))
+      .map((q) => toQuote(this.broker, QuoteSide.Bid, Number(q[0]), Number(q[1])))
       .value();
     return _.concat(asks, bids);
   }
