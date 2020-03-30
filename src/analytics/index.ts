@@ -1,7 +1,7 @@
-import AnalyticsService from './AnalyticsService';
-import { getLogger } from '@bitr/logger';
+import { getLogger } from "@bitr/logger";
+import AnalyticsService from "./AnalyticsService";
 
-const log = getLogger('analytics');
+const log = getLogger("analytics");
 let analyticsService: AnalyticsService;
 
 async function main() {
