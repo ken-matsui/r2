@@ -1,25 +1,25 @@
+import { getLogger } from "@bitr/logger";
+import * as _ from "lodash";
+import t from "./intl";
+import { calcProfit } from "./pnl";
+import PositionService from "./PositionService";
 import {
-  ILimitCheckResult,
   IConfigStore,
-  ISpreadAnalysisResult,
   ILimitChecker,
-  OrderPair
-} from './types';
-import { getLogger } from '@bitr/logger';
-import * as _ from 'lodash';
-import t from './intl';
-import PositionService from './PositionService';
-import { calcProfit } from './pnl';
+  ILimitCheckResult,
+  ISpreadAnalysisResult,
+  OrderPair,
+} from "./types";
 
 export default class MainLimitChecker implements ILimitChecker {
   private readonly log = getLogger(this.constructor.name);
-  private limits: ILimitChecker[];
+  private readonly limits: ILimitChecker[];
 
   constructor(
     configStore: IConfigStore,
     positionService: PositionService,
     spreadAnalysisResult: ISpreadAnalysisResult,
-    orderPair?: OrderPair
+    orderPair?: OrderPair,
   ) {
     if (orderPair) {
       this.limits = [
@@ -27,7 +27,7 @@ export default class MainLimitChecker implements ILimitChecker {
         new MaxNetExposureLimit(configStore, positionService),
         new MaxTargetProfitLimit(configStore, spreadAnalysisResult),
         new MaxTargetVolumeLimit(configStore, spreadAnalysisResult),
-        new DemoModeLimit(configStore)
+        new DemoModeLimit(configStore),
       ];
     } else {
       this.limits = [
@@ -36,20 +36,20 @@ export default class MainLimitChecker implements ILimitChecker {
         new MinTargetProfitLimit(configStore, spreadAnalysisResult),
         new MaxTargetProfitLimit(configStore, spreadAnalysisResult),
         new MaxTargetVolumeLimit(configStore, spreadAnalysisResult),
-        new DemoModeLimit(configStore)
+        new DemoModeLimit(configStore),
       ];
     }
   }
 
-  check(): ILimitCheckResult {
+  public check(): ILimitCheckResult {
     for (const limit of this.limits) {
       const result = limit.check();
-      this.log.debug(`${limit.constructor.name} ${result.success ? 'passed' : 'violated'}`);
+      this.log.debug(`${limit.constructor.name} ${result.success ? "passed" : "violated"}`);
       if (!result.success) {
         return result;
       }
     }
-    return { success: true, reason: '', message: '' };
+    return { success: true, reason: "", message: "" };
   }
 }
 
@@ -59,15 +59,15 @@ class MinExitTargetProfitLimit implements ILimitChecker {
   constructor(
     private readonly configStore: IConfigStore,
     private readonly spreadAnalysisResult: ISpreadAnalysisResult,
-    private readonly orderPair: OrderPair
+    private readonly orderPair: OrderPair,
   ) {}
 
-  check(): ILimitCheckResult {
+  public check(): ILimitCheckResult {
     const success = this.isExitProfitLargeEnough();
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Too small exit profit';
+    const reason = "Too small exit profit";
     const message = t`TargetProfitIsSmallerThanMinProfit`;
     return { success, reason, message };
   }
@@ -89,7 +89,7 @@ class MinExitTargetProfitLimit implements ILimitChecker {
       minExitTargetProfitPercent !== undefined
         ? _.round(minExitTargetProfitPercent / 100 * targetVolumeNotional)
         : Number.MIN_SAFE_INTEGER,
-      exitNetProfitRatio !== undefined ? openProfit * (exitNetProfitRatio / 100 - 1) : Number.MIN_SAFE_INTEGER
+      exitNetProfitRatio !== undefined ? openProfit * (exitNetProfitRatio / 100 - 1) : Number.MIN_SAFE_INTEGER,
     ]) as number;
   }
 }
@@ -97,12 +97,12 @@ class MinExitTargetProfitLimit implements ILimitChecker {
 class MaxNetExposureLimit implements ILimitChecker {
   constructor(private readonly configStore: IConfigStore, private readonly positionService: PositionService) {}
 
-  check(): ILimitCheckResult {
+  public check(): ILimitCheckResult {
     const success = Math.abs(this.positionService.netExposure) <= this.configStore.config.maxNetExposure;
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Max exposure breached';
+    const reason = "Max exposure breached";
     const message = t`NetExposureIsLargerThanMaxNetExposure`;
     return { success, reason, message };
   }
@@ -111,26 +111,29 @@ class MaxNetExposureLimit implements ILimitChecker {
 class InvertedSpreadLimit implements ILimitChecker {
   constructor(private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
-  check() {
+  public check() {
     const success = this.spreadAnalysisResult.invertedSpread > 0;
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Spread not inverted';
+    const reason = "Spread not inverted";
     const message = t`NoArbitrageOpportunitySpreadIsNotInverted`;
     return { success, reason, message };
   }
 }
 
 class MinTargetProfitLimit implements ILimitChecker {
-  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
+  constructor(
+      private readonly configStore: IConfigStore,
+      private readonly spreadAnalysisResult: ISpreadAnalysisResult
+  ) {}
 
-  check() {
+  public check() {
     const success = this.isTargetProfitLargeEnough();
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Too small profit';
+    const reason = "Too small profit";
     const message = t`TargetProfitIsSmallerThanMinProfit`;
     return { success, reason, message };
   }
@@ -143,21 +146,24 @@ class MinTargetProfitLimit implements ILimitChecker {
       config.minTargetProfit,
       config.minTargetProfitPercent !== undefined
         ? _.round(config.minTargetProfitPercent / 100 * targetVolumeNotional)
-        : 0
+        : 0,
     ]) as number;
     return targetProfit >= effectiveMinTargetProfit;
   }
 }
 
 class MaxTargetProfitLimit implements ILimitChecker {
-  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
+  constructor(
+      private readonly configStore: IConfigStore,
+      private readonly spreadAnalysisResult: ISpreadAnalysisResult,
+  ) {}
 
-  check() {
+  public check() {
     const success = this.isProfitSmallerThanLimit();
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Too large profit';
+    const reason = "Too large profit";
     const message = t`TargetProfitIsLargerThanMaxProfit`;
     return { success, reason, message };
   }
@@ -169,21 +175,24 @@ class MaxTargetProfitLimit implements ILimitChecker {
       config.maxTargetProfit,
       config.maxTargetProfitPercent !== undefined
         ? _.round(config.maxTargetProfitPercent / 100 * _.mean([ask.price, bid.price]) * targetVolume)
-        : Number.MAX_SAFE_INTEGER
+        : Number.MAX_SAFE_INTEGER,
     ]) as number;
     return targetProfit <= maxTargetProfit;
   }
 }
 
 class MaxTargetVolumeLimit implements ILimitChecker {
-  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
+  constructor(
+      private readonly configStore: IConfigStore,
+      private readonly spreadAnalysisResult: ISpreadAnalysisResult,
+  ) {}
 
-  check() {
+  public check() {
     const success = this.isVolumeSmallerThanLimit();
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Too large Volume';
+    const reason = "Too large Volume";
     const message = t`TargetVolumeIsLargerThanMaxTargetVolumePercent`;
     return { success, reason, message };
   }
@@ -194,7 +203,7 @@ class MaxTargetVolumeLimit implements ILimitChecker {
     const maxTargetVolume = _.min([
       config.maxTargetVolumePercent !== undefined
         ? config.maxTargetVolumePercent / 100 * availableVolume
-        : Number.MAX_SAFE_INTEGER
+        : Number.MAX_SAFE_INTEGER,
     ]) as number;
     return targetVolume <= maxTargetVolume;
   }
@@ -203,12 +212,12 @@ class MaxTargetVolumeLimit implements ILimitChecker {
 class DemoModeLimit implements ILimitChecker {
   constructor(private readonly configStore: IConfigStore) {}
 
-  check() {
+  public check() {
     const success = !this.configStore.config.demoMode;
     if (success) {
-      return { success, reason: '', message: '' };
+      return { success, reason: "", message: "" };
     }
-    const reason = 'Demo mode';
+    const reason = "Demo mode";
     const message = t`ThisIsDemoModeNotSendingOrders`;
     return { success, reason, message };
   }
