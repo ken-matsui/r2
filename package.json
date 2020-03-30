@@ -42,7 +42,7 @@
     "inversify": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.13",
-    "luxon": "^0.2.12",
+    "luxon": "^1.22.2",
     "mkdirp": "^0.5.1",
     "node-fetch": "^1.7.3",
     "opn": "^5.2.0",
