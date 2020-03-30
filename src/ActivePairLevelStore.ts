@@ -1,39 +1,39 @@
-import { IActivePairStore, OrderPair } from './types';
-import { reviveOrder } from './OrderImpl';
-import { ChronoDB, TimeSeries } from '@bitr/chronodb';
-import { EventEmitter } from 'events';
+import { ChronoDB, TimeSeries } from "@bitr/chronodb";
+import { EventEmitter } from "events";
+import { reviveOrder } from "./OrderImpl";
+import { IActivePairStore, OrderPair } from "./types";
 
 class EmittableActivePairStore extends EventEmitter implements IActivePairStore {
-  timeSeries: TimeSeries<OrderPair>;
+  public timeSeries: TimeSeries<OrderPair>;
 
   constructor(chronoDB: ChronoDB) {
     super();
     this.timeSeries = chronoDB.getTimeSeries<OrderPair>(
-      'ActivePair',
-      orderPair => orderPair.map(o => reviveOrder(o)) as OrderPair
+      "ActivePair",
+      (orderPair) => orderPair.map((o) => reviveOrder(o)) as OrderPair,
     );
   }
 
-  get(key: string): Promise<OrderPair> {
+  public get(key: string): Promise<OrderPair> {
     return this.timeSeries.get(key);
   }
 
-  getAll(): Promise<{ key: string; value: OrderPair }[]> {
+  public getAll(): Promise<Array<{ key: string; value: OrderPair }>> {
     return this.timeSeries.getAll();
   }
 
-  put(value: OrderPair): Promise<string> {
-    this.emit('change');
+  public put(value: OrderPair): Promise<string> {
+    this.emit("change");
     return this.timeSeries.put(value);
   }
 
-  del(key: string): Promise<void> {
-    this.emit('change');
+  public del(key: string): Promise<void> {
+    this.emit("change");
     return this.timeSeries.del(key);
   }
 
-  delAll(): Promise<{}> {
-    this.emit('change');
+  public delAll(): Promise<{}> {
+    this.emit("change");
     return this.timeSeries.delAll();
   }
 }
