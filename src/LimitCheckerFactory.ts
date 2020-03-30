@@ -1,22 +1,22 @@
-import { injectable, inject } from 'inversify';
-import symbols from './symbols';
-import { IConfigStore, ISpreadAnalysisResult, ILimitChecker, OrderPair } from './types';
-import PositionService from './PositionService';
-import MainLimitChecker from './MainLimitChecker';
+import { inject, injectable } from "inversify";
+import MainLimitChecker from "./MainLimitChecker";
+import PositionService from "./PositionService";
+import symbols from "./symbols";
+import { IConfigStore, ILimitChecker, ISpreadAnalysisResult, OrderPair } from "./types";
 
 @injectable()
 export default class LimitCheckerFactory {
   constructor(
     @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
-    private readonly positionService: PositionService
+    private readonly positionService: PositionService,
   ) {}
 
-  create(spreadAnalysisResult: ISpreadAnalysisResult, orderPair?: OrderPair): ILimitChecker {
+  public create(spreadAnalysisResult: ISpreadAnalysisResult, orderPair?: OrderPair): ILimitChecker {
     return new MainLimitChecker(
       this.configStore,
       this.positionService,
       spreadAnalysisResult,
-      orderPair
+      orderPair,
     );
   }
 } /* istanbul ignore next */
