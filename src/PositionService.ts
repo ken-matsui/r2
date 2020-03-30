@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { ConfigStore, BrokerConfig, BrokerMap, BrokerPosition } from './types';
+import { IConfigStore, BrokerConfig, IBrokerMap, IBrokerPosition } from './types';
 import { getLogger } from '@bitr/logger';
 import * as _ from 'lodash';
 import Decimal from 'decimal.js';
@@ -15,10 +15,10 @@ export default class PositionService extends EventEmitter {
   private readonly log = getLogger(this.constructor.name);
   private timer;
   private isRefreshing: boolean;
-  private _positionMap: BrokerMap<BrokerPosition>;
+  private _positionMap: IBrokerMap<IBrokerPosition>;
 
   constructor(
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly brokerAdapterRouter: BrokerAdapterRouter,
     private readonly brokerStabilityTracker: BrokerStabilityTracker
   ) {
@@ -43,14 +43,14 @@ export default class PositionService extends EventEmitter {
   print(): void {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
     const isOk = b => (b ? 'OK' : 'NG');
-    const formatBrokerPosition = (brokerPosition: BrokerPosition) =>
+    const formatBrokerPosition = (brokerPosition: IBrokerPosition) =>
       `${padEnd(brokerPosition.broker, 10)}: ${padStart(_.round(brokerPosition.baseCcyPosition, 3), 6)} ${baseCcy}, ` +
       `${t`LongAllowed`}: ${isOk(brokerPosition.longAllowed)}, ` +
       `${t`ShortAllowed`}: ${isOk(brokerPosition.shortAllowed)}`;
 
     this.log.info({ hidden: true }, hr(21) + 'POSITION' + hr(21));
     this.log.info({ hidden: true }, `Net Exposure: ${_.round(this.netExposure, 3)} ${baseCcy}`);
-    _.each(this.positionMap, (position: BrokerPosition) => {
+    _.each(this.positionMap, (position: IBrokerPosition) => {
       const stability = this.brokerStabilityTracker.stability(position.broker);
       this.log.info({ hidden: true }, `${formatBrokerPosition(position)} (Stability: ${stability})`);
     });
@@ -59,7 +59,7 @@ export default class PositionService extends EventEmitter {
   }
 
   get netExposure() {
-    return eRound(_.sumBy(_.values(this.positionMap), (p: BrokerPosition) => p.baseCcyPosition));
+    return eRound(_.sumBy(_.values(this.positionMap), (p: IBrokerPosition) => p.baseCcyPosition));
   }
 
   get positionMap() {
@@ -79,7 +79,7 @@ export default class PositionService extends EventEmitter {
       const promises = brokerConfigs.map(brokerConfig => this.getBrokerPosition(brokerConfig, config.minSize));
       const brokerPositions = await Promise.all(promises);
       this._positionMap = _(brokerPositions)
-        .map((p: BrokerPosition) => [p.broker, p])
+        .map((p: IBrokerPosition) => [p.broker, p])
         .fromPairs()
         .value();
       await this.emit('positionUpdated', this.positionMap);
@@ -92,7 +92,7 @@ export default class PositionService extends EventEmitter {
     }
   }
 
-  private async getBrokerPosition(brokerConfig: BrokerConfig, minSize: number): Promise<BrokerPosition> {
+  private async getBrokerPosition(brokerConfig: BrokerConfig, minSize: number): Promise<IBrokerPosition> {
     const { baseCcy } = splitSymbol(this.configStore.config.symbol);
     const positions = await this.brokerAdapterRouter.getPositions(brokerConfig.broker);
     const baseCcyPosition = positions.get(baseCcy);

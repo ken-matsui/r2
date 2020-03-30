@@ -1,10 +1,10 @@
-import { SpreadStat } from './types';
+import { ISpreadStat } from './types';
 import { ChronoDB, TimeSeries } from '@bitr/chronodb';
 import { eRound } from './util';
 import { EOL } from 'os';
 
-export const getSpreadStatTimeSeries = (chronoDB: ChronoDB): TimeSeries<SpreadStat> =>
-  chronoDB.getTimeSeries<SpreadStat>('SpreadStat');
+export const getSpreadStatTimeSeries = (chronoDB: ChronoDB): TimeSeries<ISpreadStat> =>
+  chronoDB.getTimeSeries<ISpreadStat>('SpreadStat');
 
 export const spreadStatCsvHeader = [
   'timestamp',
@@ -32,7 +32,7 @@ export const spreadStatCsvHeader = [
   '[worst] target profit percent'
 ].join(', ') + EOL;
 
-export function spreadStatToCsv(spreadStat: SpreadStat): string {
+export function spreadStatToCsv(spreadStat: ISpreadStat): string {
   return [
     new Date(spreadStat.timestamp).toLocaleString(),
     spreadStat.bestCase.ask.broker,

@@ -1,15 +1,15 @@
 ﻿import {
-  BrokerAdapter,
+  IBrokerAdapter,
   OrderStatus,
   OrderType,
   TimeInForce,
   OrderSide,
   CashMarginType,
   QuoteSide,
-  Order,
-  Execution,
-  Quote,
-  BrokerConfigType
+  IOrder,
+  IExecution,
+  IQuote,
+  IBrokerConfigType
 } from '../types';
 import { getLogger } from '@bitr/logger';
 import * as _ from 'lodash';
@@ -17,16 +17,16 @@ import BrokerApi from './BrokerApi';
 import { ChildOrdersParam, SendChildOrderRequest, ChildOrder, BoardResponse } from './types';
 import { eRound, toExecution } from '../util';
 
-export default class BrokerAdapterImpl implements BrokerAdapter {
+export default class BrokerAdapterImpl implements IBrokerAdapter {
   private readonly brokerApi: BrokerApi;
   private readonly log = getLogger('Bitflyer.BrokerAdapter');
   readonly broker = 'Bitflyer';
 
-  constructor(private readonly config: BrokerConfigType) {
+  constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
   }
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     if (order.broker !== this.broker) {
       throw new Error();
     }
@@ -38,7 +38,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.lastUpdated = new Date();
   }
 
-  async refresh(order: Order): Promise<void> {
+  async refresh(order: IOrder): Promise<void> {
     const orderId = order.brokerOrderId;
     const request: ChildOrdersParam = { child_order_acceptance_id: orderId };
     const reply = await this.brokerApi.getChildOrders(request);
@@ -56,13 +56,13 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
       e.size = x.size;
       e.price = x.price;
       e.execTime = new Date(x.exec_date);
-      return e as Execution;
+      return e as IExecution;
     });
 
     order.lastUpdated = new Date();
   }
 
-  async cancel(order: Order): Promise<void> {
+  async cancel(order: IOrder): Promise<void> {
     let productCode = '';
     switch (order.symbol) {
       case 'BTC/JPY':
@@ -86,12 +86,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     return btcBalance.amount;
   }
 
-  async fetchQuotes(): Promise<Quote[]> {
+  async fetchQuotes(): Promise<IQuote[]> {
     const response = await this.brokerApi.getBoard();
     return this.mapToQuote(response);
   }
 
-  private mapOrderToSendChildOrderRequest(order: Order): SendChildOrderRequest {
+  private mapOrderToSendChildOrderRequest(order: IOrder): SendChildOrderRequest {
     if (order.cashMarginType !== CashMarginType.Cash) {
       throw new Error('Not implemented.');
     }
@@ -145,7 +145,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     };
   }
 
-  private setOrderFields(childOrder: ChildOrder, order: Order): void {
+  private setOrderFields(childOrder: ChildOrder, order: IOrder): void {
     order.filledSize = eRound(childOrder.executed_size);
     if (childOrder.child_order_state === 'CANCELED') {
       order.status = OrderStatus.Canceled;
@@ -159,7 +159,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.lastUpdated = new Date();
   }
 
-  private mapToQuote(boardResponse: BoardResponse): Quote[] {
+  private mapToQuote(boardResponse: BoardResponse): IQuote[] {
     const asks = _(boardResponse.asks)
       .take(100)
       .map(q => {

@@ -2,14 +2,14 @@ import { getLogger } from '@bitr/logger';
 import { injectable, inject } from 'inversify';
 import * as _ from 'lodash';
 import {
-  ConfigStore,
-  SpreadAnalysisResult,
-  ActivePairStore,
-  Quote,
+  IConfigStore,
+  ISpreadAnalysisResult,
+  IActivePairStore,
+  IQuote,
   OrderPair,
   OrderSide,
-  PairWithSummary,
-  PairSummary
+  IPairWithSummary,
+  IPairSummary
 } from './types';
 import t from './intl';
 import { padEnd, formatQuote } from './util';
@@ -28,11 +28,11 @@ export default class OppotunitySearcher extends EventEmitter {
   private readonly log = getLogger(this.constructor.name);
 
   constructor(
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly positionService: PositionService,
     private readonly spreadAnalyzer: SpreadAnalyzer,
     private readonly limitCheckerFactory: LimitCheckerFactory,
-    @inject(symbols.ActivePairStore) private readonly activePairStore: ActivePairStore
+    @inject(symbols.ActivePairStore) private readonly activePairStore: IActivePairStore
   ) {
     super();
   }
@@ -42,13 +42,13 @@ export default class OppotunitySearcher extends EventEmitter {
   }
 
   async search(
-    quotes: Quote[]
-  ): Promise<{ found: false } | { found: true; spreadAnalysisResult: SpreadAnalysisResult; closable: boolean }> {
+    quotes: IQuote[]
+  ): Promise<{ found: false } | { found: true; spreadAnalysisResult: ISpreadAnalysisResult; closable: boolean }> {
     this.log.info(t`LookingForOpportunity`);
     const { closable, key: closablePairKey, exitAnalysisResult } = await this.findClosable(quotes);
     if (closable) {
       this.log.info(t`FoundClosableOrders`);
-      const spreadAnalysisResult = exitAnalysisResult as SpreadAnalysisResult;
+      const spreadAnalysisResult = exitAnalysisResult as ISpreadAnalysisResult;
       this.log.debug(`Deleting key ${closablePairKey}.`);
       await this.activePairStore.del(closablePairKey as string);
       return { found: true, spreadAnalysisResult, closable };
@@ -77,8 +77,8 @@ export default class OppotunitySearcher extends EventEmitter {
   }
 
   private async findClosable(
-    quotes: Quote[]
-  ): Promise<{ closable: boolean; key?: string; exitAnalysisResult?: SpreadAnalysisResult }> {
+    quotes: IQuote[]
+  ): Promise<{ closable: boolean; key?: string; exitAnalysisResult?: ISpreadAnalysisResult }> {
     const { minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio } = this.configStore.config;
     if ([minExitTargetProfit, minExitTargetProfitPercent, exitNetProfitRatio].every(_.isUndefined)) {
       return { closable: false };
@@ -87,7 +87,7 @@ export default class OppotunitySearcher extends EventEmitter {
     if (activePairsMap.length > 0) {
       this.log.info({ hidden: true }, t`OpenPairs`);
       const pairsWithSummary = await Promise.all(
-        activePairsMap.map(async (kv): Promise<PairWithSummary> => {
+        activePairsMap.map(async (kv): Promise<IPairWithSummary> => {
           const { key, value: pair } = kv;
           try {
             const exitAnalysisResult = await this.spreadAnalyzer.analyze(
@@ -106,7 +106,7 @@ export default class OppotunitySearcher extends EventEmitter {
       pairsWithSummary.forEach(x => this.log.info({ hidden: true }, this.formatPairSummary(x.pair, x.pairSummary)));
       for (const pairWithSummary of pairsWithSummary.filter(x => x.exitAnalysisResult !== undefined)) {
         const limitChecker = this.limitCheckerFactory.create(
-          pairWithSummary.exitAnalysisResult as SpreadAnalysisResult,
+          pairWithSummary.exitAnalysisResult as ISpreadAnalysisResult,
           pairWithSummary.pair
         );
         if (limitChecker.check().success) {
@@ -117,7 +117,7 @@ export default class OppotunitySearcher extends EventEmitter {
     return { closable: false };
   }
 
-  private getPairSummary(pair: OrderPair, exitAnalysisResult?: SpreadAnalysisResult): PairSummary {
+  private getPairSummary(pair: OrderPair, exitAnalysisResult?: ISpreadAnalysisResult): IPairSummary {
     const entryProfit = calcProfit(pair, this.configStore.config).profit;
     const buyLeg = pair.find(o => o.side === OrderSide.Buy) as OrderImpl;
     const sellLeg = pair.find(o => o.side === OrderSide.Sell) as OrderImpl;
@@ -143,7 +143,7 @@ export default class OppotunitySearcher extends EventEmitter {
     };
   }
 
-  private formatPairSummary(pair: OrderPair, pairSummary: PairSummary) {
+  private formatPairSummary(pair: OrderPair, pairSummary: IPairSummary) {
     const { entryProfit, entryProfitRatio, currentExitCost } = pairSummary;
     const entryProfitString = `Entry PL: ${_.round(entryProfit)} JPY (${entryProfitRatio}%)`;
     if (currentExitCost) {
@@ -158,7 +158,7 @@ export default class OppotunitySearcher extends EventEmitter {
     return `[${[OrderUtil.toShortString(pair[0]), OrderUtil.toShortString(pair[1]), entryProfitString].join(', ')}]`;
   }
 
-  private printSpreadAnalysisResult(result: SpreadAnalysisResult) {
+  private printSpreadAnalysisResult(result: ISpreadAnalysisResult) {
     const columnWidth = 17;
     this.log.info({ hidden: true }, '%s: %s', padEnd(t`BestAsk`, columnWidth), formatQuote(result.ask));
     this.log.info({ hidden: true }, '%s: %s', padEnd(t`BestBid`, columnWidth), formatQuote(result.bid));

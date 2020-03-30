@@ -1,28 +1,28 @@
-﻿import { Quote, Broker, Order } from './common';
-import { ConfigRoot } from './config';
-import OrderImpl from '../OrderImpl';
-import { TimeSeries } from '@bitr/chronodb';
-import { EventEmitter } from 'events';
+﻿import { TimeSeries } from "@bitr/chronodb";
+import { EventEmitter } from "events";
+import OrderImpl from "../OrderImpl";
+import { Broker, IOrder, IQuote } from "./common";
+import { ConfigRoot } from "./config";
 
-export interface BrokerAdapter {
-  broker: Broker;
-  send(order: Order): Promise<void>;
-  refresh(order: Order): Promise<void>;
-  cancel(order: Order): Promise<void>;
-  getBtcPosition(): Promise<number>;
+export interface IBrokerAdapter {
   getPositions?: () => Promise<Map<string, number>>;
-  fetchQuotes(): Promise<Quote[]>;
+  broker: Broker;
+  cancel(order: IOrder): Promise<void>;
+  fetchQuotes(): Promise<IQuote[]>;
+  getBtcPosition(): Promise<number>;
+  refresh(order: IOrder): Promise<void>;
+  send(order: IOrder): Promise<void>;
 }
 
-export interface BrokerMap<T> {
+export interface IBrokerMap<T> {
   [key: string]: T;
 }
 
 export type OrderPair = [OrderImpl, OrderImpl];
 
-export interface SpreadAnalysisResult {
-  bid: Quote;
-  ask: Quote;
+export interface ISpreadAnalysisResult {
+  bid: IQuote;
+  ask: IQuote;
   invertedSpread: number;
   availableVolume: number;
   targetVolume: number;
@@ -30,7 +30,7 @@ export interface SpreadAnalysisResult {
   profitPercentAgainstNotional: number;
 }
 
-export interface PairSummary {
+export interface IPairSummary {
   entryProfit: number;
   entryProfitRatio: number;
   currentExitCost?: number;
@@ -38,35 +38,35 @@ export interface PairSummary {
   currentExitNetProfitRatio?: number;
 }
 
-export interface PairWithSummary {
+export interface IPairWithSummary {
   key: string;
   pair: OrderPair;
-  pairSummary: PairSummary;
-  exitAnalysisResult?: SpreadAnalysisResult;
+  pairSummary: IPairSummary;
+  exitAnalysisResult?: ISpreadAnalysisResult;
 }
 
-export interface SpreadStat {
+export interface ISpreadStat {
   timestamp: number;
-  byBroker: { [x: string]: { ask?: Quote; bid?: Quote; spread?: number } };
-  bestCase: SpreadAnalysisResult;
-  worstCase: SpreadAnalysisResult;
+  byBroker: { [x: string]: { ask?: IQuote; bid?: IQuote; spread?: number } };
+  bestCase: ISpreadAnalysisResult;
+  worstCase: ISpreadAnalysisResult;
 }
 
-export interface LimitChecker {
-  check(): LimitCheckResult;
+export interface ILimitChecker {
+  check(): ILimitCheckResult;
 }
 
-export interface LimitCheckResult {
+export interface ILimitCheckResult {
   success: boolean;
   reason: string;
   message: string;
 }
 
-export interface ConfigStore extends EventEmitter {
+export interface IConfigStore extends EventEmitter {
   config: ConfigRoot;
 }
 
-export interface BrokerPosition {
+export interface IBrokerPosition {
   broker: Broker;
   longAllowed: boolean;
   shortAllowed: boolean;
@@ -75,24 +75,30 @@ export interface BrokerPosition {
   allowedShortSize: number;
 }
 
-export type OrderPairKeyValue = { key: string; value: OrderPair };
+export interface IOrderPairKeyValue {
+  key: string;
+  value: OrderPair;
+}
 
-export interface ActivePairStore extends EventEmitter {
+export interface IActivePairStore extends EventEmitter {
   get(key: string): Promise<OrderPair>;
-  getAll(): Promise<OrderPairKeyValue[]>;
+  getAll(): Promise<IOrderPairKeyValue[]>;
   put(value: OrderPair): Promise<string>;
   del(key: string): Promise<void>;
   delAll(): Promise<{}>;
 }
 
-export interface SpreadStatTimeSeries extends TimeSeries<SpreadStat> {}
+export interface ISpreadStatTimeSeries extends TimeSeries<ISpreadStat> {}
 
-export type OrderKeyValue = { key: string; value: Order };
+export interface IOrderKeyValue {
+  key: string;
+  value: IOrder;
+}
 
-export interface HistoricalOrderStore extends EventEmitter {
-  get(key: string): Promise<Order>;
-  getAll(): Promise<OrderKeyValue[]>;
-  put(value: Order): Promise<string>;
+export interface IHistoricalOrderStore extends EventEmitter {
+  get(key: string): Promise<IOrder>;
+  getAll(): Promise<IOrderKeyValue[]>;
+  put(value: IOrder): Promise<string>;
   del(key: string): Promise<void>;
   delAll(): Promise<{}>;
 }

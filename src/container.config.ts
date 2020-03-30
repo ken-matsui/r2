@@ -1,7 +1,7 @@
 import { Container, decorate, injectable } from 'inversify';
 import symbols from './symbols';
 import Arbitrager from './Arbitrager';
-import { ConfigStore, ActivePairStore, SpreadStatTimeSeries, HistoricalOrderStore } from './types';
+import { IConfigStore, IActivePairStore, ISpreadStatTimeSeries, IHistoricalOrderStore } from './types';
 import JsonConfigStore from './JsonConfigStore';
 import QuoteAggregator from './QuoteAggregator';
 import PositionService from './PositionService';
@@ -29,7 +29,7 @@ decorate(injectable(), AwaitableEventEmitter);
 const container = new Container();
 container.bind<Arbitrager>(Arbitrager).toSelf();
 container
-  .bind<ConfigStore>(symbols.ConfigStore)
+  .bind<IConfigStore>(symbols.ConfigStore)
   .to(JsonConfigStore)
   .inSingletonScope();
 container
@@ -77,12 +77,12 @@ container
   .bind<WebGateway>(WebGateway)
   .toSelf()
   .inSingletonScope();
-container.bind<ActivePairStore>(symbols.ActivePairStore).toConstantValue(getActivePairStore(getChronoDB()));
+container.bind<IActivePairStore>(symbols.ActivePairStore).toConstantValue(getActivePairStore(getChronoDB()));
 container
-  .bind<SpreadStatTimeSeries>(symbols.SpreadStatTimeSeries)
+  .bind<ISpreadStatTimeSeries>(symbols.SpreadStatTimeSeries)
   .toConstantValue(getSpreadStatTimeSeries(getChronoDB()));
 container
-  .bind<HistoricalOrderStore>(symbols.HistoricalOrderStore)
+  .bind<IHistoricalOrderStore>(symbols.HistoricalOrderStore)
   .toConstantValue(getHistoricalOrderStore(getChronoDB()));
 container
   .bind<OrderService>(OrderService)

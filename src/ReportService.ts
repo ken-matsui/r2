@@ -1,7 +1,7 @@
 import SpreadAnalyzer from './SpreadAnalyzer';
 import { injectable, inject } from 'inversify';
 import symbols from './symbols';
-import { SpreadStatTimeSeries, Quote, ConfigStore } from './types';
+import { ISpreadStatTimeSeries, IQuote, IConfigStore } from './types';
 import QuoteAggregator from './QuoteAggregator';
 import { spreadStatToCsv, spreadStatCsvHeader } from './SpreadStatTimeSeries';
 import * as fs from 'fs';
@@ -27,13 +27,13 @@ export default class ReportService {
   private streamPublisher: ZmqPublisher;
   private snapshotResponder: SnapshotResponder;
   private analyticsProcess: ChildProcess;
-  private handlerRef: (quotes: Quote[]) => Promise<void>;
+  private handlerRef: (quotes: IQuote[]) => Promise<void>;
 
   constructor(
     private readonly quoteAggregator: QuoteAggregator,
     private readonly spreadAnalyzer: SpreadAnalyzer,
-    @inject(symbols.SpreadStatTimeSeries) private readonly spreadStatTimeSeries: SpreadStatTimeSeries,
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore
+    @inject(symbols.SpreadStatTimeSeries) private readonly spreadStatTimeSeries: ISpreadStatTimeSeries,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore
   ) {}
 
   async start() {
@@ -78,7 +78,7 @@ export default class ReportService {
     this.log.debug('Stopped.');
   }
 
-  private async quoteUpdated(quotes: Quote[]): Promise<void> {
+  private async quoteUpdated(quotes: IQuote[]): Promise<void> {
     const stat = await this.spreadAnalyzer.getSpreadStat(quotes);
     if (stat) {
       await this.spreadStatTimeSeries.put(stat);

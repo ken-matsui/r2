@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Bitflyer/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, TimeInForce, BrokerConfigType } from '../../types';
+import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, TimeInForce, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
 import { options } from '@bitr/logger';
@@ -19,7 +19,7 @@ const brokerConfig = {
   key: '',
   secret: '',
   cashMarginType: CashMarginType.Cash
-} as BrokerConfigType;
+} as IBrokerConfigType;
 
 describe('Bitflyer BrokerAdapter', () => {
   test('getBtcPosition', async () => {

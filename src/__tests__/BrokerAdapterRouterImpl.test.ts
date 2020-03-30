@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { CashMarginType, OrderType, OrderSide, Broker, Order } from '../types';
+import { CashMarginType, OrderType, OrderSide, Broker, IOrder } from '../types';
 import BrokerAdapterRouter from '../BrokerAdapterRouter';
 import { options } from '@bitr/logger';
 import OrderImpl from '../OrderImpl';

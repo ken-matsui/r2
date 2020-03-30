@@ -1,14 +1,14 @@
 ﻿import { injectable, inject } from 'inversify';
 import {
-  ConfigStore,
+  IConfigStore,
   QuoteSide,
-  SpreadAnalysisResult,
-  BrokerMap,
+  ISpreadAnalysisResult,
+  IBrokerMap,
   OrderSide,
-  Quote,
-  BrokerPosition,
+  IQuote,
+  IBrokerPosition,
   OrderPair,
-  SpreadStat
+  ISpreadStat
 } from './types';
 import { getLogger } from '@bitr/logger';
 import * as _ from 'lodash';
@@ -24,13 +24,13 @@ import { calcCommission } from './pnl';
 export default class SpreadAnalyzer {
   private readonly log = getLogger(this.constructor.name);
 
-  constructor(@inject(symbols.ConfigStore) private readonly configStore: ConfigStore) {}
+  constructor(@inject(symbols.ConfigStore) private readonly configStore: IConfigStore) {}
 
   async analyze(
-    quotes: Quote[],
-    positionMap: BrokerMap<BrokerPosition>,
+    quotes: IQuote[],
+    positionMap: IBrokerMap<IBrokerPosition>,
     closingPair?: OrderPair
-  ): Promise<SpreadAnalysisResult> {
+  ): Promise<ISpreadAnalysisResult> {
     if (closingPair && closingPair[0].size !== closingPair[1].size) {
       throw new Error('Invalid closing pair.');
     }
@@ -49,9 +49,9 @@ export default class SpreadAnalyzer {
       .orderBy(['price'])
       .value();
     if (closingPair) {
-      const isOppositeSide = (o: OrderImpl, q: Quote) =>
+      const isOppositeSide = (o: OrderImpl, q: IQuote) =>
         q.side === (o.side === OrderSide.Buy ? QuoteSide.Bid : QuoteSide.Ask);
-      const isSameBroker = (o: OrderImpl, q: Quote) => o.broker === q.broker;
+      const isSameBroker = (o: OrderImpl, q: IQuote) => o.broker === q.broker;
       filteredQuotes = _(filteredQuotes)
         .filter(
           q =>
@@ -94,7 +94,7 @@ export default class SpreadAnalyzer {
     return spreadAnalysisResult;
   }
 
-  async getSpreadStat(quotes: Quote[]): Promise<SpreadStat | undefined> {
+  async getSpreadStat(quotes: IQuote[]): Promise<ISpreadStat | undefined> {
     const { config } = this.configStore;
     const filteredQuotes = _(quotes)
       .filter(q => new Decimal(q.volume).gte(config.minSize))
@@ -117,9 +117,9 @@ export default class SpreadAnalyzer {
       .map((v, k) => [v.ask, v.bid])  
       .flatten()      
       .filter(q => q !== undefined)
-      .value() as Quote[];
-    const { ask: bestAsk, bid: bestBid } = this.getBest(flattened) as { ask: Quote, bid: Quote };
-    const { ask: worstAsk, bid: worstBid } = this.getWorst(flattened) as { ask: Quote, bid: Quote };
+      .value() as IQuote[];
+    const { ask: bestAsk, bid: bestBid } = this.getBest(flattened) as { ask: IQuote, bid: IQuote };
+    const { ask: worstAsk, bid: worstBid } = this.getWorst(flattened) as { ask: IQuote, bid: IQuote };
     const bestCase = this.getEstimate(bestAsk, bestBid);
     const worstCase = this.getEstimate(worstAsk, worstBid);
     return {
@@ -130,7 +130,7 @@ export default class SpreadAnalyzer {
     };
   }
 
-  private getEstimate(ask: Quote, bid: Quote): SpreadAnalysisResult {
+  private getEstimate(ask: IQuote, bid: IQuote): ISpreadAnalysisResult {
     const invertedSpread = bid.price - ask.price;
     const availableVolume = _.floor(_.min([bid.volume, ask.volume]) as number, LOT_MIN_DECIMAL_PLACE);
     let targetVolume = _.min([availableVolume, this.configStore.config.maxSize]) as number;
@@ -150,7 +150,7 @@ export default class SpreadAnalyzer {
     };
   }
 
-  private getBest(quotes: Quote[]) {
+  private getBest(quotes: IQuote[]) {
     const ordered = _.orderBy(quotes, ['price']);
     const ask = _(ordered)
       .filter(q => q.side === QuoteSide.Ask)
@@ -161,7 +161,7 @@ export default class SpreadAnalyzer {
     return { ask, bid };
   }
 
-  private getWorst(quotes: Quote[]) {
+  private getWorst(quotes: IQuote[]) {
     const ordered = _.orderBy(quotes, ['price']);
     const ask = _(ordered)
       .filter(q => q.side === QuoteSide.Ask)
@@ -172,14 +172,14 @@ export default class SpreadAnalyzer {
     return { ask, bid };
   }
 
-  private calculateTotalCommission(quotes: Quote[], targetVolume: number): number {
+  private calculateTotalCommission(quotes: IQuote[], targetVolume: number): number {
     return _(quotes).sumBy(q => {
       const brokerConfig = findBrokerConfig(this.configStore.config, q.broker);
       return calcCommission(q.price, targetVolume, brokerConfig.commissionPercent);
     });
   }
 
-  private isAllowedByCurrentPosition(q: Quote, pos: BrokerPosition): boolean {
+  private isAllowedByCurrentPosition(q: IQuote, pos: IBrokerPosition): boolean {
     return q.side === QuoteSide.Bid ? pos.shortAllowed : pos.longAllowed;
   }
 } /* istanbul ignore next */

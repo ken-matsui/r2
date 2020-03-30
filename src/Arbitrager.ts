@@ -1,7 +1,7 @@
 ﻿import { getLogger } from '@bitr/logger';
 import { injectable, inject } from 'inversify';
 import * as _ from 'lodash';
-import { ConfigStore, Quote } from './types';
+import { IConfigStore, IQuote } from './types';
 import t from './intl';
 import { hr, delay } from './util';
 import symbols from './symbols';
@@ -16,11 +16,11 @@ export default class Arbitrager {
   private readonly log = getLogger(this.constructor.name);
   private shouldStop: boolean = false;
   status: string = 'Init';
-  private handlerRef: (quotes: Quote[]) => Promise<void>;
+  private handlerRef: (quotes: IQuote[]) => Promise<void>;
 
   constructor(
     private readonly quoteAggregator: QuoteAggregator,
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly positionService: PositionService,
     private readonly opportunitySearcher: OpportunitySearcher,
     private readonly pairTrader: PairTrader
@@ -47,7 +47,7 @@ export default class Arbitrager {
     this.shouldStop = true;
   }
 
-  private async quoteUpdated(quotes: Quote[]): Promise<void> {
+  private async quoteUpdated(quotes: IQuote[]): Promise<void> {
     if (this.shouldStop) {
       await this.stop();
       return;
@@ -58,7 +58,7 @@ export default class Arbitrager {
     this.log.info({ hidden: true }, hr(50));
   }
 
-  private async arbitrage(quotes: Quote[]): Promise<void> {
+  private async arbitrage(quotes: IQuote[]): Promise<void> {
     this.status = 'Arbitraging';
     const searchResult = await this.opportunitySearcher.search(quotes);
     if (!searchResult.found) {

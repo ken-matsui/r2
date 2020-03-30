@@ -1,5 +1,5 @@
 import OrderService from '../OrderService';
-import { HistoricalOrderStore, OrderSide, CashMarginType, OrderType, OrderStatus } from '../types';
+import { IHistoricalOrderStore, OrderSide, CashMarginType, OrderType, OrderStatus } from '../types';
 import { delay } from '../util';
 
 describe('OrderService', () => {

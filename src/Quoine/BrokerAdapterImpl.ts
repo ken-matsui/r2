@@ -1,14 +1,14 @@
 ﻿import {
-  BrokerAdapter,
+  IBrokerAdapter,
   OrderStatus,
   OrderType,
   OrderSide,
   CashMarginType,
   QuoteSide,
-  Order,
-  Execution,
-  Quote,
-  BrokerConfigType
+  IOrder,
+  IExecution,
+  IQuote,
+  IBrokerConfigType
 } from '../types';
 import BrokerApi from './BrokerApi';
 import * as _ from 'lodash';
@@ -18,12 +18,12 @@ import Decimal from 'decimal.js';
 import CashStrategy from './CashStrategy';
 import NetOutStrategy from './NetOutStrategy';
 
-export default class BrokerAdapterImpl implements BrokerAdapter {
+export default class BrokerAdapterImpl implements IBrokerAdapter {
   private readonly brokerApi: BrokerApi;
   readonly broker = 'Quoine';
   readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
 
-  constructor(private readonly config: BrokerConfigType) {
+  constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
     this.strategyMap = new Map<CashMarginType, CashMarginTypeStrategy>([
       [CashMarginType.Cash, new CashStrategy(this.brokerApi)],
@@ -31,7 +31,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     ]);
   }
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     if (order.broker !== this.broker) {
       throw new Error();
     }
@@ -43,12 +43,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.lastUpdated = new Date();
   }
 
-  async refresh(order: Order): Promise<void> {
+  async refresh(order: IOrder): Promise<void> {
     const ordersResponse = await this.brokerApi.getOrders(order.brokerOrderId);
     this.setOrderFields(ordersResponse, order);
   }
 
-  async cancel(order: Order): Promise<void> {
+  async cancel(order: IOrder): Promise<void> {
     await this.brokerApi.cancelOrder(order.brokerOrderId);
     order.lastUpdated = new Date();
     order.status = OrderStatus.Canceled;
@@ -62,12 +62,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     return await strategy.getBtcPosition();
   }
 
-  async fetchQuotes(): Promise<Quote[]> {
+  async fetchQuotes(): Promise<IQuote[]> {
     const response = await this.brokerApi.getPriceLevels();
     return this.mapToQuote(response);
   }
 
-  private mapOrderToSendOrderRequest(order: Order): SendOrderRequest {
+  private mapOrderToSendOrderRequest(order: IOrder): SendOrderRequest {
     let productId: string;
     switch (order.symbol) {
       case 'BTC/JPY':
@@ -120,7 +120,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     };
   }
 
-  private setOrderFields(ordersResponse: OrdersResponse, order: Order) {
+  private setOrderFields(ordersResponse: OrdersResponse, order: IOrder) {
     order.brokerOrderId = ordersResponse.id.toString();
     order.filledSize = Number(ordersResponse.filled_quantity);
     order.creationTime = timestampToDate(ordersResponse.created_at);
@@ -134,12 +134,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
       e.price = Number(x.price);
       e.size = Number(x.quantity);
       e.execTime = timestampToDate(x.created_at);
-      return e as Execution;
+      return e as IExecution;
     });
     order.lastUpdated = new Date();
   }
 
-  private mapToQuote(priceLevelsResponse: PriceLevelsResponse): Quote[] {
+  private mapToQuote(priceLevelsResponse: PriceLevelsResponse): IQuote[] {
     const asks = _(priceLevelsResponse.sell_price_levels)
       .take(100)
       .map(q => toQuote(this.broker, QuoteSide.Ask, Number(q[0]), Number(q[1])))

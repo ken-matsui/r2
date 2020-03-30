@@ -1,4 +1,4 @@
-import { ConfigRoot, SpreadStat } from './types';
+import { ConfigRoot, ISpreadStat } from './types';
 import { ZmqResponder, ZmqRequester } from '@bitr/zmq';
 
 export interface GenericRequest<T> {
@@ -18,6 +18,6 @@ export class ConfigRequester extends ZmqRequester<ConfigRequest, ConfigResponse>
 export class ConfigResponder extends ZmqResponder<ConfigRequest, ConfigResponse> {}
 
 export interface SnapshotRequest extends GenericRequest<never> {}
-export interface SnapshotResponse extends GenericResponse<SpreadStat[]> {}
+export interface SnapshotResponse extends GenericResponse<ISpreadStat[]> {}
 export class SnapshotRequester extends ZmqRequester<SnapshotRequest, SnapshotResponse> {}
 export class SnapshotResponder extends ZmqResponder<SnapshotRequest, SnapshotResponse> {}

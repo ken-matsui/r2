@@ -1,25 +1,25 @@
-import { HistoricalOrderStore, Order } from './types';
+import { IHistoricalOrderStore, IOrder } from './types';
 import { reviveOrder } from './OrderImpl';
 import { ChronoDB, TimeSeries } from '@bitr/chronodb';
 import { EventEmitter } from 'events';
 
-class EmittableHistoricalOrderStore extends EventEmitter implements HistoricalOrderStore {
-  private readonly timeSeries: TimeSeries<Order>;
+class EmittableHistoricalOrderStore extends EventEmitter implements IHistoricalOrderStore {
+  private readonly timeSeries: TimeSeries<IOrder>;
 
   constructor(chronoDB: ChronoDB) {
     super();
-    this.timeSeries = chronoDB.getTimeSeries<Order>('HistoricalOrder', order => reviveOrder(order));
+    this.timeSeries = chronoDB.getTimeSeries<IOrder>('HistoricalOrder', order => reviveOrder(order));
   }
 
-  get(key: string): Promise<Order> {
+  get(key: string): Promise<IOrder> {
     return this.timeSeries.get(key);
   }
 
-  getAll(): Promise<{ key: string; value: Order }[]> {
+  getAll(): Promise<{ key: string; value: IOrder }[]> {
     return this.timeSeries.getAll();
   }
 
-  put(value: Order): Promise<string> {
+  put(value: IOrder): Promise<string> {
     this.emit('change');
     return this.timeSeries.put(value);
   }
@@ -35,5 +35,5 @@ class EmittableHistoricalOrderStore extends EventEmitter implements HistoricalOr
   }
 }
 
-export const getHistoricalOrderStore = (chronoDB: ChronoDB): HistoricalOrderStore =>
+export const getHistoricalOrderStore = (chronoDB: ChronoDB): IHistoricalOrderStore =>
   new EmittableHistoricalOrderStore(chronoDB);

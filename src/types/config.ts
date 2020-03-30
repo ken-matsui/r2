@@ -1,7 +1,7 @@
-import { Castable, cast, element } from '@bitr/castable';
-import { CashMarginType } from './index';
+import { cast, Castable, element } from "@bitr/castable";
+import { CashMarginType } from "./index";
 
-export interface BrokerConfigType {
+export interface IBrokerConfigType {
   broker: string;
   npmPath?: string;
   enabled: boolean;
@@ -14,106 +14,106 @@ export interface BrokerConfigType {
   commissionPercent: number;
 }
 
-export class BrokerConfig extends Castable implements BrokerConfigType {
-  @cast broker: string;
-  @cast npmPath?: string;
-  @cast enabled: boolean;
-  @cast key: string;
-  @cast secret: string;
-  @cast maxLongPosition: number;
-  @cast maxShortPosition: number;
-  @cast cashMarginType: CashMarginType;
-  @cast leverageLevel: number;
-  @cast commissionPercent: number;
-  @cast @element(Array, String) noTradePeriods: string[][];
+export class BrokerConfig extends Castable implements IBrokerConfigType {
+  @cast public broker: string;
+  @cast public npmPath?: string;
+  @cast public enabled: boolean;
+  @cast public key: string;
+  @cast public secret: string;
+  @cast public maxLongPosition: number;
+  @cast public maxShortPosition: number;
+  @cast public cashMarginType: CashMarginType;
+  @cast public leverageLevel: number;
+  @cast public commissionPercent: number;
+  @cast @element(Array, String) public noTradePeriods: string[][];
 }
 
 export class SlackConfig extends Castable {
-  @cast enabled: boolean;
-  @cast url: string;
-  @cast channel: string;
-  @cast username: string;
+  @cast public enabled: boolean;
+  @cast public url: string;
+  @cast public channel: string;
+  @cast public username: string;
   @cast
   @element(String)
-  keywords: string[];
+  public keywords: string[];
 }
 
 export class LineConfig extends Castable {
-  @cast enabled: boolean;
-  @cast token: string;
+  @cast public enabled: boolean;
+  @cast public token: string;
   @cast
   @element(String)
-  keywords: string[];
+  public keywords: string[];
 }
 
 export class LoggingConfig extends Castable {
-  @cast slack: SlackConfig;
-  @cast line: LineConfig;
+  @cast public slack: SlackConfig;
+  @cast public line: LineConfig;
 }
 
 export class OnSingleLegConfig extends Castable {
-  @cast action: 'Cancel' | 'Reverse' | 'Proceed';
-  @cast actionOnExit: 'Cancel' | 'Reverse' | 'Proceed';
-  @cast options: CancelOption | ReverseOption | ProceedOption;
+  @cast public action: "Cancel" | "Reverse" | "Proceed";
+  @cast public actionOnExit: "Cancel" | "Reverse" | "Proceed";
+  @cast public options: ICancelOption | ReverseOption | ProceedOption;
 }
 
-export type CancelOption = {};
+export interface ICancelOption {}
 
 export class ReverseOption extends Castable {
-  @cast limitMovePercent: number;
-  @cast ttl: number;
+  @cast public limitMovePercent: number;
+  @cast public ttl: number;
 }
 
 export class ProceedOption extends Castable {
-  @cast limitMovePercent: number;
-  @cast ttl: number;
+  @cast public limitMovePercent: number;
+  @cast public ttl: number;
 }
 
 export class AnalyticsConfig extends Castable {
-  @cast enabled: boolean;
-  @cast plugin: string;
-  @cast initialHistory: object;
+  @cast public enabled: boolean;
+  @cast public plugin: string;
+  @cast public initialHistory: object;
 }
 
 export class WebGatewayConfig extends Castable {
-  @cast enabled: boolean;
-  @cast host: string;
-  @cast openBrowser: boolean;
+  @cast public enabled: boolean;
+  @cast public host: string;
+  @cast public openBrowser: boolean;
 }
 
 export class StabilityTrackerConfig extends Castable {
-  @cast threshold: number;
-  @cast recoveryInterval: number;
+  @cast public threshold: number;
+  @cast public recoveryInterval: number;
 }
 
 export class ConfigRoot extends Castable {
-  @cast language: string;
-  @cast demoMode: boolean;
-  @cast symbol: string;
-  @cast priceMergeSize: number;
-  @cast maxSize: number;
-  @cast minSize: number;
-  @cast minTargetProfit: number;
-  @cast minExitTargetProfit: number;
-  @cast minTargetProfitPercent: number;
-  @cast minExitTargetProfitPercent: number;
-  @cast exitNetProfitRatio: number;
-  @cast maxTargetProfit: number;
-  @cast maxTargetProfitPercent: number;
-  @cast maxTargetVolumePercent: number;
-  @cast acceptablePriceRange: number;
-  @cast iterationInterval: number;
-  @cast positionRefreshInterval: number;
-  @cast sleepAfterSend: number;
-  @cast maxNetExposure: number;
-  @cast maxRetryCount: number;
-  @cast orderStatusCheckInterval: number;
-  @cast stabilityTracker: StabilityTrackerConfig;
-  @cast onSingleLeg: OnSingleLegConfig;
-  @cast analytics: AnalyticsConfig;
-  @cast webGateway: WebGatewayConfig;
+  @cast public language: string;
+  @cast public demoMode: boolean;
+  @cast public symbol: string;
+  @cast public priceMergeSize: number;
+  @cast public maxSize: number;
+  @cast public minSize: number;
+  @cast public minTargetProfit: number;
+  @cast public minExitTargetProfit: number;
+  @cast public minTargetProfitPercent: number;
+  @cast public minExitTargetProfitPercent: number;
+  @cast public exitNetProfitRatio: number;
+  @cast public maxTargetProfit: number;
+  @cast public maxTargetProfitPercent: number;
+  @cast public maxTargetVolumePercent: number;
+  @cast public acceptablePriceRange: number;
+  @cast public iterationInterval: number;
+  @cast public positionRefreshInterval: number;
+  @cast public sleepAfterSend: number;
+  @cast public maxNetExposure: number;
+  @cast public maxRetryCount: number;
+  @cast public orderStatusCheckInterval: number;
+  @cast public stabilityTracker: StabilityTrackerConfig;
+  @cast public onSingleLeg: OnSingleLegConfig;
+  @cast public analytics: AnalyticsConfig;
+  @cast public webGateway: WebGatewayConfig;
   @cast
   @element(BrokerConfig)
-  brokers: BrokerConfig[];
-  @cast logging: LoggingConfig;
+  public brokers: BrokerConfig[];
+  @cast public logging: LoggingConfig;
 }

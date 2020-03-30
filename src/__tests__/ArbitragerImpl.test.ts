@@ -2,14 +2,14 @@ import {
   Broker,
   QuoteSide,
   ConfigRoot,
-  ConfigStore,
+  IConfigStore,
   CashMarginType,
   OrderStatus,
   OrderSide,
   OnSingleLegConfig,
-  Order,
-  Execution,
-  Quote
+  IOrder,
+  IExecution,
+  IQuote
 } from '../types';
 import Arbitrager from '../Arbitrager';
 import OppotunitySearcher from '../OpportunitySearcher';
@@ -78,7 +78,7 @@ describe('Arbitrager', () => {
         }
       ]
     } as ConfigRoot;
-    configStore = { config } as ConfigStore;
+    configStore = { config } as IConfigStore;
     positionMap = {
       Coincheck: {
         allowedLongSize: 10,
@@ -1792,10 +1792,10 @@ describe('Arbitrager', () => {
       toQuote('Coincheck', QuoteSide.Ask, 500, 1),
       toQuote('Coincheck', QuoteSide.Bid, 400, 1)
     ];
-    baRouter.refresh.mockImplementation((order: Order) => {
+    baRouter.refresh.mockImplementation((order: IOrder) => {
       order.status = OrderStatus.Filled;
       order.filledSize = order.size;
-      order.executions = [{ price: order.price, size: order.size } as Execution];
+      order.executions = [{ price: order.price, size: order.size } as IExecution];
     });
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
@@ -1828,10 +1828,10 @@ describe('Arbitrager', () => {
       toQuote('Coincheck', QuoteSide.Ask, 500, 1),
       toQuote('Coincheck', QuoteSide.Bid, 400, 1)
     ];
-    baRouter.refresh.mockImplementation((order: Order) => {
+    baRouter.refresh.mockImplementation((order: IOrder) => {
       order.status = OrderStatus.Filled;
       order.filledSize = order.size;
-      order.executions = [{ price: order.price, size: order.size } as Execution];
+      order.executions = [{ price: order.price, size: order.size } as IExecution];
     });
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;
@@ -1864,10 +1864,10 @@ describe('Arbitrager', () => {
       toQuote('Coincheck', QuoteSide.Ask, 500, 1),
       toQuote('Coincheck', QuoteSide.Bid, 400, 1)
     ];
-    baRouter.refresh.mockImplementation((order: Order) => {
+    baRouter.refresh.mockImplementation((order: IOrder) => {
       order.status = OrderStatus.Filled;
       order.filledSize = order.size;
-      order.executions = [{ price: order.price, size: order.size } as Execution];
+      order.executions = [{ price: order.price, size: order.size } as IExecution];
     });
     config.maxRetryCount = 3;
     config.minTargetProfit = 50;

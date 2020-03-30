@@ -1,5 +1,5 @@
 import OrderImpl from '../OrderImpl';
-import { Broker, OrderSide, OrderType, CashMarginType, Execution } from '../types';
+import { Broker, OrderSide, OrderType, CashMarginType, IExecution } from '../types';
 import { toExecution } from '../util';
 import { createOrder } from './helper';
 
@@ -12,8 +12,8 @@ describe('Order', () => {
     const ex2 = toExecution(target);
     ex2.price = 1200;
     ex2.size = 0.006;
-    target.executions.push(ex1 as Execution);
-    target.executions.push(ex2 as Execution);
+    target.executions.push(ex1 as IExecution);
+    target.executions.push(ex2 as IExecution);
     expect(target.averageFilledPrice).toBe(1160);
   });
 });

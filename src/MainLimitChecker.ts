@@ -1,8 +1,8 @@
 import {
-  LimitCheckResult,
-  ConfigStore,
-  SpreadAnalysisResult,
-  LimitChecker,
+  ILimitCheckResult,
+  IConfigStore,
+  ISpreadAnalysisResult,
+  ILimitChecker,
   OrderPair
 } from './types';
 import { getLogger } from '@bitr/logger';
@@ -11,14 +11,14 @@ import t from './intl';
 import PositionService from './PositionService';
 import { calcProfit } from './pnl';
 
-export default class MainLimitChecker implements LimitChecker {
+export default class MainLimitChecker implements ILimitChecker {
   private readonly log = getLogger(this.constructor.name);
-  private limits: LimitChecker[];
+  private limits: ILimitChecker[];
 
   constructor(
-    configStore: ConfigStore,
+    configStore: IConfigStore,
     positionService: PositionService,
-    spreadAnalysisResult: SpreadAnalysisResult,
+    spreadAnalysisResult: ISpreadAnalysisResult,
     orderPair?: OrderPair
   ) {
     if (orderPair) {
@@ -41,7 +41,7 @@ export default class MainLimitChecker implements LimitChecker {
     }
   }
 
-  check(): LimitCheckResult {
+  check(): ILimitCheckResult {
     for (const limit of this.limits) {
       const result = limit.check();
       this.log.debug(`${limit.constructor.name} ${result.success ? 'passed' : 'violated'}`);
@@ -53,16 +53,16 @@ export default class MainLimitChecker implements LimitChecker {
   }
 }
 
-class MinExitTargetProfitLimit implements LimitChecker {
+class MinExitTargetProfitLimit implements ILimitChecker {
   private readonly log = getLogger(this.constructor.name);
 
   constructor(
-    private readonly configStore: ConfigStore,
-    private readonly spreadAnalysisResult: SpreadAnalysisResult,
+    private readonly configStore: IConfigStore,
+    private readonly spreadAnalysisResult: ISpreadAnalysisResult,
     private readonly orderPair: OrderPair
   ) {}
 
-  check(): LimitCheckResult {
+  check(): ILimitCheckResult {
     const success = this.isExitProfitLargeEnough();
     if (success) {
       return { success, reason: '', message: '' };
@@ -94,10 +94,10 @@ class MinExitTargetProfitLimit implements LimitChecker {
   }
 }
 
-class MaxNetExposureLimit implements LimitChecker {
-  constructor(private readonly configStore: ConfigStore, private readonly positionService: PositionService) {}
+class MaxNetExposureLimit implements ILimitChecker {
+  constructor(private readonly configStore: IConfigStore, private readonly positionService: PositionService) {}
 
-  check(): LimitCheckResult {
+  check(): ILimitCheckResult {
     const success = Math.abs(this.positionService.netExposure) <= this.configStore.config.maxNetExposure;
     if (success) {
       return { success, reason: '', message: '' };
@@ -108,8 +108,8 @@ class MaxNetExposureLimit implements LimitChecker {
   }
 }
 
-class InvertedSpreadLimit implements LimitChecker {
-  constructor(private readonly spreadAnalysisResult: SpreadAnalysisResult) {}
+class InvertedSpreadLimit implements ILimitChecker {
+  constructor(private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
   check() {
     const success = this.spreadAnalysisResult.invertedSpread > 0;
@@ -122,8 +122,8 @@ class InvertedSpreadLimit implements LimitChecker {
   }
 }
 
-class MinTargetProfitLimit implements LimitChecker {
-  constructor(private readonly configStore: ConfigStore, private readonly spreadAnalysisResult: SpreadAnalysisResult) {}
+class MinTargetProfitLimit implements ILimitChecker {
+  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
   check() {
     const success = this.isTargetProfitLargeEnough();
@@ -149,8 +149,8 @@ class MinTargetProfitLimit implements LimitChecker {
   }
 }
 
-class MaxTargetProfitLimit implements LimitChecker {
-  constructor(private readonly configStore: ConfigStore, private readonly spreadAnalysisResult: SpreadAnalysisResult) {}
+class MaxTargetProfitLimit implements ILimitChecker {
+  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
   check() {
     const success = this.isProfitSmallerThanLimit();
@@ -175,8 +175,8 @@ class MaxTargetProfitLimit implements LimitChecker {
   }
 }
 
-class MaxTargetVolumeLimit implements LimitChecker {
-  constructor(private readonly configStore: ConfigStore, private readonly spreadAnalysisResult: SpreadAnalysisResult) {}
+class MaxTargetVolumeLimit implements ILimitChecker {
+  constructor(private readonly configStore: IConfigStore, private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
   check() {
     const success = this.isVolumeSmallerThanLimit();
@@ -200,8 +200,8 @@ class MaxTargetVolumeLimit implements LimitChecker {
   }
 }
 
-class DemoModeLimit implements LimitChecker {
-  constructor(private readonly configStore: ConfigStore) {}
+class DemoModeLimit implements ILimitChecker {
+  constructor(private readonly configStore: IConfigStore) {}
 
   check() {
     const success = !this.configStore.config.demoMode;

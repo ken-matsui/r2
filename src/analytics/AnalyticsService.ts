@@ -1,11 +1,11 @@
-import { SpreadStat,  AnalyticsConfig } from '../types';
+import { ISpreadStat,  AnalyticsConfig } from '../types';
 import { getLogger } from '@bitr/logger';
 import { reportServicePubUrl, reportServiceRepUrl, configStoreSocketUrl } from '../constants';
 import { SnapshotRequester, ConfigRequester } from '../messages';
 import ZmqSubscriber from '@bitr/zmq/dist/ZmqSubscriber';
 
 export interface SpreadStatHandlerPlugin {
-  handle: (spreadStat: SpreadStat) => any;
+  handle: (spreadStat: ISpreadStat) => any;
 }
 
 export default class AnalyticsService {
@@ -32,7 +32,7 @@ export default class AnalyticsService {
       throw new Error('Failed to initial snapshot message.');
     }
     this.spreadStatHandler = await this.getSpreadStatHandler(snapshotMessage.data);
-    this.streamSubscriber.subscribe<SpreadStat>('spreadStat', message => this.handleStream(message));
+    this.streamSubscriber.subscribe<ISpreadStat>('spreadStat', message => this.handleStream(message));
     process.on('message', message => {
       if (message === 'stop') {
         this.log.info('Analysis process received stop message.');
@@ -64,12 +64,12 @@ export default class AnalyticsService {
     return reply.data.analytics;
   }
 
-  private async getSpreadStatHandler(snapshot: SpreadStat[]): Promise<SpreadStatHandlerPlugin> {
+  private async getSpreadStatHandler(snapshot: ISpreadStat[]): Promise<SpreadStatHandlerPlugin> {
     const SpreadStatHandler = await import(`${this.pluginDir}/${this.config.plugin}`);
     return new SpreadStatHandler(snapshot);
   }
 
-  private async handleStream(spreadStat: SpreadStat | undefined): Promise<void> {
+  private async handleStream(spreadStat: ISpreadStat | undefined): Promise<void> {
     if (this.isHandling) {
       return;
     }

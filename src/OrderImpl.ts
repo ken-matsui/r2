@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { v4 as uuid } from "uuid";
-import { Broker, CashMarginType, Execution, Order, OrderSide, OrderStatus, OrderType, TimeInForce } from "./types";
+import { Broker, CashMarginType, IExecution, IOrder, OrderSide, OrderStatus, OrderType, TimeInForce } from "./types";
 import { eRound, revive } from "./util";
 
 export interface IOrderInit {
@@ -14,7 +14,7 @@ export interface IOrderInit {
   leverageLevel: number;
 }
 
-export default class OrderImpl implements Order {
+export default class OrderImpl implements IOrder {
   public broker: Broker;
   public side: OrderSide;
   public size: number;
@@ -31,7 +31,7 @@ export default class OrderImpl implements Order {
   public creationTime: Date = new Date();
   public sentTime: Date;
   public lastUpdated: Date;
-  public executions: Execution[] = [];
+  public executions: IExecution[] = [];
 
   constructor(init: IOrderInit) {
     Object.assign(this, init);
@@ -59,8 +59,8 @@ export default class OrderImpl implements Order {
   }
 }
 
-export function reviveOrder(o: Order): OrderImpl {
-  const r = revive<OrderImpl, Order>(OrderImpl, o);
+export function reviveOrder(o: IOrder): OrderImpl {
+  const r = revive<OrderImpl, IOrder>(OrderImpl, o);
   r.creationTime = new Date(r.creationTime);
   r.sentTime = new Date(r.sentTime);
   return r;

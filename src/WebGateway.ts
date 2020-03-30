@@ -1,13 +1,13 @@
 import { injectable, inject } from 'inversify';
 import symbols from './symbols';
 import {
-  Quote,
-  ConfigStore,
-  BrokerPosition,
-  BrokerMap,
-  SpreadAnalysisResult,
+  IQuote,
+  IConfigStore,
+  IBrokerPosition,
+  IBrokerMap,
+  ISpreadAnalysisResult,
   ConfigRoot,
-  LimitCheckResult
+  ILimitCheckResult
 } from './types';
 import QuoteAggregator from './QuoteAggregator';
 import { getLogger } from '@bitr/logger';
@@ -36,7 +36,7 @@ export default class WebGateway {
 
   constructor(
     private readonly quoteAggregator: QuoteAggregator,
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly positionService: PositionService,
     private readonly opportunitySearcher: OppotunitySearcher,
     private readonly orderService: OrderService
@@ -101,19 +101,19 @@ export default class WebGateway {
     this.log.debug(`Stopped ${this.constructor.name}.`);
   }
 
-  private async quoteUpdated(quotes: Quote[]): Promise<void> {
+  private async quoteUpdated(quotes: IQuote[]): Promise<void> {
     this.broadcast('quoteUpdated', quotes);
   }
 
-  private positionUpdated(positions: BrokerMap<BrokerPosition>) {
+  private positionUpdated(positions: IBrokerMap<IBrokerPosition>) {
     this.broadcast('positionUpdated', positions);
   }
 
-  private spreadAnalysisDone(result: SpreadAnalysisResult) {
+  private spreadAnalysisDone(result: ISpreadAnalysisResult) {
     this.broadcast('spreadAnalysisDone', result);
   }
 
-  private limitCheckDone(limitCheckResult: LimitCheckResult) {
+  private limitCheckDone(limitCheckResult: ILimitCheckResult) {
     this.broadcast('limitCheckDone', limitCheckResult);
   }
 

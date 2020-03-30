@@ -1,5 +1,5 @@
 import { injectable } from 'inversify';
-import { ConfigStore, ConfigRoot } from './types';
+import { IConfigStore, ConfigRoot } from './types';
 import { getConfigRoot, getConfigPath } from './configUtil';
 import ConfigValidator from './ConfigValidator';
 import { setTimeout } from 'timers';
@@ -14,7 +14,7 @@ import { EventEmitter } from 'events';
 const writeFile = promisify(fs.writeFile);
 
 @injectable()
-export default class JsonConfigStore extends EventEmitter implements ConfigStore {
+export default class JsonConfigStore extends EventEmitter implements IConfigStore {
   private readonly log = getLogger(this.constructor.name);
   private timer: NodeJS.Timer;
   private readonly responder: ConfigResponder;

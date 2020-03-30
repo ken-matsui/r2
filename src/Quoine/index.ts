@@ -1,6 +1,6 @@
 import BrokerAdapterImpl from './BrokerAdapterImpl';
-import { BrokerConfigType } from '../types';
+import { IBrokerConfigType } from '../types';
 
-export function create(config: BrokerConfigType) {
+export function create(config: IBrokerConfigType) {
   return new BrokerAdapterImpl(config);
 }

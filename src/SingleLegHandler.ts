@@ -1,4 +1,4 @@
-import { OnSingleLegConfig, ReverseOption, ProceedOption, OrderSide, OrderType, OrderPair, ConfigStore } from './types';
+import { OnSingleLegConfig, ReverseOption, ProceedOption, OrderSide, OrderType, OrderPair, IConfigStore } from './types';
 import { LOT_MIN_DECIMAL_PLACE } from './constants';
 import OrderImpl from './OrderImpl';
 import * as _ from 'lodash';
@@ -18,7 +18,7 @@ export default class SingleLegHandler {
 
   constructor(
     private readonly brokerAdapterRouter: BrokerAdapterRouter,
-    @inject(symbols.ConfigStore) configStore: ConfigStore
+    @inject(symbols.ConfigStore) configStore: IConfigStore
   ) {
     this.onSingleLegConfig = configStore.config.onSingleLeg;
     this.symbol = configStore.config.symbol;

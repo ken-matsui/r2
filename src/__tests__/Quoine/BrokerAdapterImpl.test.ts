@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Quoine/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, BrokerConfigType } from '../../types';
+import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
 import { options } from '@bitr/logger';
@@ -14,7 +14,7 @@ const brokerConfig = {
   key: 'key',
   secret: 'secret',
   cashMarginType: CashMarginType.NetOut
-} as BrokerConfigType;
+} as IBrokerConfigType;
 
 describe('Quoine BrokerAdapter', () => {
   beforeAll(() => {
@@ -112,7 +112,7 @@ describe('Quoine BrokerAdapter', () => {
       key: 'key',
       secret: 'secret',
       cashMarginType: CashMarginType.Cash
-    } as BrokerConfigType;
+    } as IBrokerConfigType;
     const target = new BrokerAdapterImpl(cashConfig);
     const result = await target.getBtcPosition();
     expect(result).toBe(0.04925688);
@@ -124,7 +124,7 @@ describe('Quoine BrokerAdapter', () => {
       key: 'key',
       secret: 'secret',
       cashMarginType: CashMarginType.MarginOpen
-    } as BrokerConfigType;
+    } as IBrokerConfigType;
     const target = new BrokerAdapterImpl(wrongConfig);
     try {
       const result = await target.getBtcPosition();

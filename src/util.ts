@@ -2,7 +2,7 @@ import * as crypto from "crypto";
 import * as fs from "fs";
 import * as _ from "lodash";
 import * as querystring from "querystring";
-import { Broker, Execution, Order, Quote, QuoteSide } from "./types";
+import { Broker, IExecution, IOrder, IQuote, QuoteSide } from "./types";
 
 interface IToStringable {
   toString(): string;
@@ -76,7 +76,7 @@ export function readJsonFileSync(filepath: string): any {
   return JSON.parse(removeBom(content));
 }
 
-export function toExecution(order: Order): Partial<Execution> {
+export function toExecution(order: IOrder): Partial<IExecution> {
   return {
     broker: order.broker,
     brokerOrderId: order.brokerOrderId,
@@ -99,7 +99,7 @@ export function splitSymbol(symbol: string): { baseCcy: string; quoteCcy: string
   return { baseCcy, quoteCcy };
 }
 
-export function formatQuote(quote: Quote) {
+export function formatQuote(quote: IQuote) {
   return (
     `${padEnd(quote.broker, 10)} ${quote.side} ` +
     `${padStart(quote.price.toLocaleString(), 7)} ${_.round(quote.volume, 3)}`

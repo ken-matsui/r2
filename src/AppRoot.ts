@@ -2,7 +2,7 @@
 import t from './intl';
 import 'reflect-metadata';
 import symbols from './symbols';
-import { BrokerAdapter, ConfigStore } from './types';
+import { IBrokerAdapter, IConfigStore } from './types';
 import { Container } from 'inversify';
 import { closeChronoDB } from './chrono';
 import QuoteAggregator from './QuoteAggregator';
@@ -55,7 +55,7 @@ export default class AppRoot {
   }
 
   private async bindBrokers(): Promise<void> {
-    const configStore = this.ioc.get<ConfigStore>(symbols.ConfigStore);
+    const configStore = this.ioc.get<IConfigStore>(symbols.ConfigStore);
     const brokerConfigs = configStore.config.brokers;
     const bindTasks = brokerConfigs.map(async brokerConfig => {
       const brokerName = brokerConfig.broker;
@@ -66,7 +66,7 @@ export default class AppRoot {
         throw new Error(`Unable to find ${brokerName} package.`);
       }
       const brokerAdapter = brokerModule.create(brokerConfig);
-      this.ioc.bind<BrokerAdapter>(symbols.BrokerAdapter).toConstantValue(brokerAdapter);
+      this.ioc.bind<IBrokerAdapter>(symbols.BrokerAdapter).toConstantValue(brokerAdapter);
     });
     await Promise.all(bindTasks);
   }

@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Coincheck/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, ConfigRoot, BrokerConfigType } from '../../types';
+import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, ConfigRoot, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
 import OrderImpl from '../../OrderImpl';
 import { NewOrderRequest } from '../../Coincheck/types';
@@ -17,7 +17,7 @@ const brokerConfig = {
   key: '',
   secret: '',
   cashMarginType: CashMarginType.MarginOpen
-} as BrokerConfigType;
+} as IBrokerConfigType;
 
 describe('Coincheck BrokerAdapter', () => {
   test('send with invalid cashMarginType', async () => {

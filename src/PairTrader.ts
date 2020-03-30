@@ -3,13 +3,13 @@ import { injectable, inject } from 'inversify';
 import * as _ from 'lodash';
 import OrderImpl from './OrderImpl';
 import {
-  ConfigStore,
-  SpreadAnalysisResult,
+  IConfigStore,
+  ISpreadAnalysisResult,
   OrderType,
   QuoteSide,
   OrderSide,
-  ActivePairStore,
-  Quote,
+  IActivePairStore,
+  IQuote,
   OrderPair
 } from './types';
 import t from './intl';
@@ -27,9 +27,9 @@ export default class PairTrader extends EventEmitter {
   private readonly log = getLogger(this.constructor.name);
 
   constructor(
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly brokerAdapterRouter: BrokerAdapterRouter,
-    @inject(symbols.ActivePairStore) private readonly activePairStore: ActivePairStore,
+    @inject(symbols.ActivePairStore) private readonly activePairStore: IActivePairStore,
     private readonly singleLegHandler: SingleLegHandler
   ) {
     super();
@@ -39,7 +39,7 @@ export default class PairTrader extends EventEmitter {
     this.emit('status', value);
   }
 
-  async trade(spreadAnalysisResult: SpreadAnalysisResult, closable: boolean): Promise<void> {
+  async trade(spreadAnalysisResult: ISpreadAnalysisResult, closable: boolean): Promise<void> {
     const { bid, ask, targetVolume } = spreadAnalysisResult;
     const sendTasks = [ask, bid].map(q => this.sendOrder(q, targetVolume, OrderType.Limit));
     const orders = await Promise.all(sendTasks);
@@ -97,7 +97,7 @@ export default class PairTrader extends EventEmitter {
     }
   }
 
-  private async sendOrder(quote: Quote, targetVolume: number, orderType: OrderType): Promise<OrderImpl> {
+  private async sendOrder(quote: IQuote, targetVolume: number, orderType: OrderType): Promise<OrderImpl> {
     this.log.info(t`SendingOrderTargettingQuote`, formatQuote(quote));
     const brokerConfig = findBrokerConfig(this.configStore.config, quote.broker);
     const { config } = this.configStore;

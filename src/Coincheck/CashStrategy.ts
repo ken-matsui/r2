@@ -1,11 +1,11 @@
 import { CashMarginTypeStrategy } from './types';
 import BrokerApi from './BrokerApi';
-import { Order, OrderStatus, OrderSide, OrderType, CashMarginType } from '../types';
+import { IOrder, OrderStatus, OrderSide, OrderType, CashMarginType } from '../types';
 
 export default class CashStrategy implements CashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     if (order.cashMarginType !== CashMarginType.Cash) {
       throw new Error();
     }
@@ -29,7 +29,7 @@ export default class CashStrategy implements CashMarginTypeStrategy {
     return (await this.brokerApi.getAccountsBalance()).btc;
   }
 
-  private getBrokerOrderType(order: Order): string {
+  private getBrokerOrderType(order: IOrder): string {
     switch (order.side) {
       case OrderSide.Buy:
         switch (order.type) {

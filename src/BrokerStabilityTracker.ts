@@ -1,4 +1,4 @@
-import { Broker, ConfigStore } from './types';
+import { Broker, IConfigStore } from './types';
 import { inject, injectable } from 'inversify';
 import symbols from './symbols';
 import * as _ from 'lodash';
@@ -11,7 +11,7 @@ export default class BrokerStabilityTracker {
   private stabilityMap: Map<Broker, number>;
   private timer;
 
-  constructor(@inject(symbols.ConfigStore) private readonly configStore: ConfigStore) {
+  constructor(@inject(symbols.ConfigStore) private readonly configStore: IConfigStore) {
     const brokers = this.configStore.config.brokers.map(b => b.broker);
     this.stabilityMap = new Map<Broker, number>(brokers.map(b => [b, MAX] as [string, number]));
   }

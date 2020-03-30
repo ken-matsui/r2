@@ -1,5 +1,5 @@
 ﻿import { injectable, inject } from 'inversify';
-import { ConfigStore, BrokerConfig, QuoteSide, Broker, Quote } from './types';
+import { IConfigStore, BrokerConfig, QuoteSide, Broker, IQuote } from './types';
 import { getLogger } from '@bitr/logger';
 import * as _ from 'lodash';
 import symbols from './symbols';
@@ -12,10 +12,10 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
   private readonly log = getLogger(this.constructor.name);
   private timer;
   private isRunning: boolean;
-  private quotes: Quote[] = [];
+  private quotes: IQuote[] = [];
 
   constructor(
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly brokerAdapterRouter: BrokerAdapterRouter
   ) {
     super();
@@ -60,7 +60,7 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
     }
   }
 
-  private async setQuotes(value: Quote[]): Promise<void> {
+  private async setQuotes(value: IQuote[]): Promise<void> {
     this.quotes = value;
     this.log.debug('New quotes have been set.');
     this.log.debug('Calling onQuoteUpdated...');
@@ -92,13 +92,13 @@ export default class QuoteAggregator extends AwaitableEventEmitter {
     return brokerConfig.noTradePeriods.every(outOfPeriod);
   }
 
-  private fold(quotes: Quote[], step: number): Quote[] {
+  private fold(quotes: IQuote[], step: number): IQuote[] {
     return _(quotes)
-      .groupBy((q: Quote) => {
+      .groupBy((q: IQuote) => {
         const price = q.side === QuoteSide.Ask ? _.ceil(q.price / step) * step : _.floor(q.price / step) * step;
         return _.join([price, q.broker, QuoteSide[q.side]], '#');
       })
-      .map((value: Quote[], key) => ({
+      .map((value: IQuote[], key) => ({
         broker: value[0].broker,
         side: value[0].side,
         price: Number(key.substring(0, key.indexOf('#'))),

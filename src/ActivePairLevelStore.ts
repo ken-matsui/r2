@@ -1,9 +1,9 @@
-import { ActivePairStore, OrderPair } from './types';
+import { IActivePairStore, OrderPair } from './types';
 import { reviveOrder } from './OrderImpl';
 import { ChronoDB, TimeSeries } from '@bitr/chronodb';
 import { EventEmitter } from 'events';
 
-class EmittableActivePairStore extends EventEmitter implements ActivePairStore {
+class EmittableActivePairStore extends EventEmitter implements IActivePairStore {
   timeSeries: TimeSeries<OrderPair>;
 
   constructor(chronoDB: ChronoDB) {
@@ -38,4 +38,4 @@ class EmittableActivePairStore extends EventEmitter implements ActivePairStore {
   }
 }
 
-export const getActivePairStore = (chronoDB: ChronoDB): ActivePairStore => new EmittableActivePairStore(chronoDB);
+export const getActivePairStore = (chronoDB: ChronoDB): IActivePairStore => new EmittableActivePairStore(chronoDB);

@@ -1,10 +1,10 @@
 import { getHistoricalOrderStore } from '../HistoricalOrderStore';
 import { ChronoDB } from '@bitr/chronodb';
 import { createOrder } from './helper';
-import { OrderSide, CashMarginType, OrderType, HistoricalOrderStore } from '../types';
+import { OrderSide, CashMarginType, OrderType, IHistoricalOrderStore } from '../types';
 
 describe('HistoricalOrderStore', () => {
-  let store: HistoricalOrderStore;
+  let store: IHistoricalOrderStore;
   let chronoDB;
   beforeAll(async () => {
     chronoDB = new ChronoDB(`${__dirname}/datastore/histtest`);

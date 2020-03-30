@@ -1,4 +1,4 @@
-﻿import { Broker, BrokerAdapter, BrokerMap, Order, Quote, ConfigStore } from './types';
+﻿import { Broker, IBrokerAdapter, IBrokerMap, IOrder, IQuote, IConfigStore } from './types';
 import { getLogger } from '@bitr/logger';
 import * as _ from 'lodash';
 import { injectable, multiInject, inject } from 'inversify';
@@ -10,18 +10,18 @@ import OrderImpl from './OrderImpl';
 @injectable()
 export default class BrokerAdapterRouter {
   private readonly log = getLogger(this.constructor.name);
-  private readonly brokerAdapterMap: BrokerMap<BrokerAdapter>;
+  private readonly brokerAdapterMap: IBrokerMap<IBrokerAdapter>;
 
   constructor(
-    @multiInject(symbols.BrokerAdapter) brokerAdapters: BrokerAdapter[],
+    @multiInject(symbols.BrokerAdapter) brokerAdapters: IBrokerAdapter[],
     private readonly brokerStabilityTracker: BrokerStabilityTracker,
-    @inject(symbols.ConfigStore) private readonly configStore: ConfigStore,
+    @inject(symbols.ConfigStore) private readonly configStore: IConfigStore,
     private readonly orderService: OrderService
   ) {
     this.brokerAdapterMap = _.keyBy(brokerAdapters, x => x.broker);
   }
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     this.log.debug(order.toString());
     try {
       await this.brokerAdapterMap[order.broker].send(order);
@@ -32,13 +32,13 @@ export default class BrokerAdapterRouter {
     }
   }
 
-  async cancel(order: Order): Promise<void> {
+  async cancel(order: IOrder): Promise<void> {
     this.log.debug(order.toString());
     await this.brokerAdapterMap[order.broker].cancel(order);
     this.orderService.emitOrderUpdated(order as OrderImpl);
   }
 
-  async refresh(order: Order): Promise<void> {
+  async refresh(order: IOrder): Promise<void> {
     this.log.debug(order.toString());
     await this.brokerAdapterMap[order.broker].refresh(order);
     this.orderService.emitOrderUpdated(order as OrderImpl);
@@ -61,7 +61,7 @@ export default class BrokerAdapterRouter {
     }
   }
 
-  async fetchQuotes(broker: Broker): Promise<Quote[]> {
+  async fetchQuotes(broker: Broker): Promise<IQuote[]> {
     try {
       return await this.brokerAdapterMap[broker].fetchQuotes();
     } catch (ex) {

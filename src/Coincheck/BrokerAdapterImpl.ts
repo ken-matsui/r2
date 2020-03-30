@@ -3,14 +3,14 @@ import { addMinutes } from 'date-fns';
 import * as _ from 'lodash';
 import BrokerApi from './BrokerApi';
 import {
-  Order,
-  Execution,
+  IOrder,
+  IExecution,
   CashMarginType,
-  BrokerAdapter,
+  IBrokerAdapter,
   QuoteSide,
   OrderStatus,
-  Quote,
-  BrokerConfigType
+  IQuote,
+  IBrokerConfigType
 } from '../types';
 import { OrderBooksResponse, CashMarginTypeStrategy } from './types';
 import { eRound, almostEqual, toExecution, toQuote } from '../util';
@@ -18,13 +18,13 @@ import CashStrategy from './CashStrategy';
 import MarginOpenStrategy from './MarginOpenStrategy';
 import NetOutStrategy from './NetOutStrategy';
 
-export default class BrokerAdapterImpl implements BrokerAdapter {
+export default class BrokerAdapterImpl implements IBrokerAdapter {
   private readonly brokerApi: BrokerApi;
   private readonly log = getLogger('Coincheck.BrokerAdapter');
   readonly broker = 'Coincheck';
   readonly strategyMap: Map<CashMarginType, CashMarginTypeStrategy>;
 
-  constructor(private readonly config: BrokerConfigType) {
+  constructor(private readonly config: IBrokerConfigType) {
     this.brokerApi = new BrokerApi(this.config.key, this.config.secret);
     this.strategyMap = new Map<CashMarginType, CashMarginTypeStrategy>([
       [CashMarginType.Cash, new CashStrategy(this.brokerApi)],
@@ -41,12 +41,12 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     return await strategy.getBtcPosition();
   }
 
-  async fetchQuotes(): Promise<Quote[]> {
+  async fetchQuotes(): Promise<IQuote[]> {
     const response = await this.brokerApi.getOrderBooks();
     return this.mapToQuote(response);
   }
 
-  private mapToQuote(orderBooksResponse: OrderBooksResponse): Quote[] {
+  private mapToQuote(orderBooksResponse: OrderBooksResponse): IQuote[] {
     const asks = _(orderBooksResponse.asks)
       .take(100)
       .map(q => toQuote(this.broker, QuoteSide.Ask, q[0], q[1]))
@@ -58,7 +58,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     return _.concat(asks, bids);
   }
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     if (order.broker !== this.broker) {
       throw new Error();
     }
@@ -69,7 +69,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     await strategy.send(order);
   }
 
-  async cancel(order: Order): Promise<void> {
+  async cancel(order: IOrder): Promise<void> {
     const orderId = order.brokerOrderId;
     const reply = await this.brokerApi.cancelOrder(orderId);
     if (!reply.success) {
@@ -79,7 +79,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
     order.status = OrderStatus.Canceled;
   }
 
-  async refresh(order: Order): Promise<void> {
+  async refresh(order: IOrder): Promise<void> {
     const reply = await this.brokerApi.getOpenOrders();
     const brokerOrder = _.find(reply.orders, o => o.id === order.brokerOrderId);
     if (brokerOrder !== undefined) {
@@ -106,7 +106,7 @@ export default class BrokerAdapterImpl implements BrokerAdapter {
       execution.execTime = x.created_at;
       execution.price = x.rate;
       execution.size = Math.abs(x.funds.btc);
-      return execution as Execution;
+      return execution as IExecution;
     });
     order.filledSize = eRound(_.sumBy(order.executions, x => x.size));
     order.status = almostEqual(order.filledSize, order.size, 1) ? OrderStatus.Filled : OrderStatus.Canceled;

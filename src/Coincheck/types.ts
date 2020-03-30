@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
 import { Castable, cast, element } from '@bitr/castable';
-import { Order } from '../types';
+import { IOrder } from '../types';
 
 export class AccountsBalanceResponse extends Castable {
   @cast success: boolean;
@@ -244,6 +244,6 @@ export class TransactionsResponse extends Castable {
 }
 
 export interface CashMarginTypeStrategy {
-  send(order: Order): Promise<void>;
+  send(order: IOrder): Promise<void>;
   getBtcPosition(): Promise<number>;
 }

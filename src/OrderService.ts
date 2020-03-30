@@ -3,13 +3,13 @@ import { inject, injectable } from "inversify";
 import _ = require("lodash");
 import OrderImpl, { IOrderInit } from "./OrderImpl";
 import symbols from "./symbols";
-import { HistoricalOrderStore } from "./types";
+import { IHistoricalOrderStore } from "./types";
 
 @injectable()
 export default class OrderService extends EventEmitter {
   public orders: OrderImpl[] = [];
 
-  constructor(@inject(symbols.HistoricalOrderStore) private readonly historicalOrderStore: HistoricalOrderStore) {
+  constructor(@inject(symbols.HistoricalOrderStore) private readonly historicalOrderStore: IHistoricalOrderStore) {
     super();
   }
 

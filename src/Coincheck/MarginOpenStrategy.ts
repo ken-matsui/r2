@@ -1,13 +1,13 @@
 import { CashMarginTypeStrategy } from './types';
 import BrokerApi from './BrokerApi';
-import { Order, OrderStatus, OrderSide, CashMarginType } from '../types';
+import { IOrder, OrderStatus, OrderSide, CashMarginType } from '../types';
 import { eRound } from '../util';
 import * as _ from 'lodash';
 
 export default class MarginOpenStrategy implements CashMarginTypeStrategy {
   constructor(private readonly brokerApi: BrokerApi) {}
 
-  async send(order: Order): Promise<void> {
+  async send(order: IOrder): Promise<void> {
     if (order.cashMarginType !== CashMarginType.MarginOpen) {
       throw new Error();
     }
@@ -34,7 +34,7 @@ export default class MarginOpenStrategy implements CashMarginTypeStrategy {
     return eRound(longPosition - shortPosition);
   }
 
-  private getBrokerOrderType(order: Order): string {
+  private getBrokerOrderType(order: IOrder): string {
     switch (order.side) {
       case OrderSide.Buy:
         return 'leverage_buy';
