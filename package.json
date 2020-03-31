@@ -61,7 +61,7 @@
     "@types/lodash": "^4.14.149",
     "@types/luxon": "^0.2.2",
     "@types/nock": "^8.2.1",
-    "@types/node": "^8.0.53",
+    "@types/node": "^13.9.8",
     "@types/node-fetch": "^2.5.5",
     "@types/pino": "^4.7.0",
     "@types/split2": "^2.1.6",
