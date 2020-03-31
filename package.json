@@ -91,7 +91,7 @@
       "jsx",
       "json"
     ],
-    "mapCoverage": true,
+    "collectCoverage": true,
     "collectCoverageFrom": [
       "**/*.{ts,tsx}",
       "!src/index.ts",
