@@ -1,4 +1,4 @@
-import chalk from "chalk";
+import * as chalk from "chalk";
 import {format as formatDate} from "date-fns";
 import * as Parse from "fast-json-parse";
 import {EOL} from "os";
@@ -26,8 +26,8 @@ const levels = {
 
 export function pretty(opts: { colorize: boolean; withLabel: boolean; debug: boolean; hidden: boolean }) {
   const { colorize, withLabel, debug, hidden } = opts;
-  const ctx = new chalk.constructor({
-    enabled: !!(chalk.supportsColor && colorize),
+  const ctx = new chalk.Instance({
+    level: Number(chalk.supportsColor && colorize),
   });
   const levelColors = {
     default: ctx.white,
