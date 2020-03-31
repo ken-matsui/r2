@@ -48,7 +48,7 @@
     "simple-statistics": "^7.0.8",
     "split2": "^3.1.1",
     "uuid": "^7.0.2",
-    "ws": "^4.0.0",
+    "ws": "^7.2.3",
     "zeromq": "^5.2.0"
   },
   "devDependencies": {
