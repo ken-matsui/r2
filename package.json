@@ -59,7 +59,7 @@
     "@types/jest": "^25.1.4",
     "@types/jsonwebtoken": "^7.2.3",
     "@types/lodash": "^4.14.149",
-    "@types/luxon": "^0.2.2",
+    "@types/luxon": "^1.22.0",
     "@types/nock": "^8.2.1",
     "@types/node": "^13.9.8",
     "@types/node-fetch": "^2.5.5",
