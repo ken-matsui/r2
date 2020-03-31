@@ -15,7 +15,6 @@
     "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": true,
     "pretty": true
   },
   "files": [
