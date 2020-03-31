@@ -70,7 +70,7 @@
     "@types/zeromq": "^4.5.3",
     "@types/opn": "^5.1.0",
     "coveralls": "^3.0.11",
-    "cpy-cli": "^1.0.1",
+    "cpy-cli": "^3.1.0",
     "jest": "^22.4.4",
     "nock": "^9.0.24",
     "rimraf": "^3.0.2",
