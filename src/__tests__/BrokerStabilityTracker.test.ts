@@ -13,6 +13,7 @@ describe('BrokerStabilityTracker', () => {
         { broker: 'dummy2' }
       ]
     };
+    // @ts-ignore
     const bst = new BrokerStabilityTracker({ config });
     await bst.start();
     await bst.stop();
@@ -29,15 +30,16 @@ describe('BrokerStabilityTracker', () => {
         { broker: 'dummy2' }
       ]
     };
+    // @ts-ignore
     const bst = new BrokerStabilityTracker({ config });
     await bst.start();
     bst.decrement('dummy1');
     bst.decrement('dummy3');
     expect(bst.stability('dummy1')).toBe(9);
-    expect(bst.isStable('dummy1')).toBe(true);    
+    expect(bst.isStable('dummy1')).toBe(true);
     expect(bst.isStable('dummy3')).toBe(false);
     await delay(20);
-    expect(bst.stability('dummy1')).toBe(10);    
+    expect(bst.stability('dummy1')).toBe(10);
     bst.decrement('dummy1');
     bst.decrement('dummy1');
     bst.decrement('dummy1');
@@ -53,6 +55,7 @@ describe('BrokerStabilityTracker', () => {
         { broker: 'dummy2' }
       ]
     };
+    // @ts-ignore
     const bst = new BrokerStabilityTracker({ config });
     await bst.start();
     await bst.stop();
@@ -60,12 +63,13 @@ describe('BrokerStabilityTracker', () => {
 
   test('start/stop with imcomplete config', async () => {
     const config = {
-      stabilityTracker: {}
+      stabilityTracker: {},
       brokers: [
         { broker: 'dummy1' },
         { broker: 'dummy2' }
       ]
     };
+    // @ts-ignore
     const bst = new BrokerStabilityTracker({ config });
     await bst.start();
     expect(bst.isStable('dummy1')).toBe(true);
