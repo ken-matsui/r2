@@ -27,7 +27,7 @@
     "lodash": "^4.17.5",
     "reconnecting-websocket": "^3.2.2",
     "rxjs": "^5.5.6",
-    "zone.js": "^0.8.19"
+    "zone.js": "^0.8.29"
   },
   "devDependencies": {
     "@angular/cli": "1.6.8",
