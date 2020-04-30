@@ -14,7 +14,7 @@ import WebGateway from "./WebGateway";
 
 export default class AppRoot {
   private readonly log = getLogger(this.constructor.name);
-  private services: Array<{ start: () => Promise<void>; stop: () => Promise<void> }>;
+  private services: { start: () => Promise<void>; stop: () => Promise<void> }[];
 
   constructor(private readonly ioc: Container) {}
 

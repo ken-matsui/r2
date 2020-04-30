@@ -18,7 +18,7 @@ class EmittableActivePairStore extends EventEmitter implements IActivePairStore 
     return this.timeSeries.get(key);
   }
 
-  public getAll(): Promise<Array<{ key: string; value: OrderPair }>> {
+  public getAll(): Promise<{ key: string; value: OrderPair }[]> {
     return this.timeSeries.getAll();
   }
 

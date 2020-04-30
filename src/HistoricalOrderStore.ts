@@ -15,7 +15,7 @@ class EmittableHistoricalOrderStore extends EventEmitter implements IHistoricalO
     return this.timeSeries.get(key);
   }
 
-  public getAll(): Promise<Array<{ key: string; value: IOrder }>> {
+  public getAll(): Promise<{ key: string; value: IOrder }[]> {
     return this.timeSeries.getAll();
   }
 

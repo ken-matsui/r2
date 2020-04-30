@@ -26,7 +26,7 @@ import {
 @injectable()
 @autobind
 export default class WebGateway {
-  private readonly eventMapper: Array<[any, string, any]>;
+  private readonly eventMapper: [any, string, any][];
   private server: http.Server;
   private app: express.Express;
   private wss: WebSocket.Server;
