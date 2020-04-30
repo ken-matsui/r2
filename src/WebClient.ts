@@ -14,6 +14,9 @@ export default class WebClient {
   ): Promise<T> {
     const url = this.baseUrl + path;
     this.log.debug(`Sending HTTP request... URL: ${url} Request: ${JSON.stringify(init)}`);
+    if (init.method === 'GET' || init.method === 'HEAD') {
+      init.body = undefined;
+    }
     const res = await fetch(url, init);
     let logText = `Response from ${res.url}. ` + `Status Code: ${res.status} (${res.statusText}) `;
     this.log.debug(logText);
