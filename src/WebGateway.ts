@@ -4,7 +4,7 @@ import * as express from "express";
 import * as http from "http";
 import { inject, injectable } from "inversify";
 import * as _ from "lodash";
-import opn = require("opn");
+import open = require("open");
 import * as WebSocket from "ws";
 import { wssPort } from "./constants";
 import OppotunitySearcher from "./OpportunitySearcher";
@@ -81,7 +81,7 @@ export default class WebGateway {
       this.clients.push(ws);
     });
     if (webGateway.openBrowser) {
-      opn(`http://${host}:${wssPort}`);
+      open(`http://${host}:${wssPort}`);
     }
     this.log.debug(`Started ${this.constructor.name}.`);
   }

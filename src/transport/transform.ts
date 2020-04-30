@@ -27,7 +27,7 @@ const levels = {
 export function pretty(opts: { colorize: boolean; withLabel: boolean; debug: boolean; hidden: boolean }) {
   const { colorize, withLabel, debug, hidden } = opts;
   const ctx = new chalk.Instance({
-    level: Number(chalk.supportsColor && colorize),
+    level: Number(chalk.supportsColor && colorize) as chalk.Level,
   });
   const levelColors = {
     default: ctx.white,
