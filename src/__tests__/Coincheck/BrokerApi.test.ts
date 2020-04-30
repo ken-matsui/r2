@@ -37,8 +37,8 @@ describe("BrokerApi", () => {
   test("getLeveragePositions paging", async () => {
     const api = new BrokerApi("", "");
     const pos1 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc" });
-    const pos2 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos1.data).id });
-    const pos3 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos2.data).id });
+    const pos2 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos1.data)?.id });
+    const pos3 = await api.getLeveragePositions({ status: "open", limit: 4, order: "desc", starting_after: _.last(pos2.data)?.id });
     const positions = _.concat(pos1.data, pos2.data, pos3.data);
     expect(positions.length).toBe(9);
     expect(positions[1].new_order.created_at.toISOString()).toBe("2017-10-20T22:41:59.000Z");

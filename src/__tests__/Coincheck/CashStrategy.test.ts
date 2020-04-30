@@ -1,8 +1,7 @@
-import { CashMarginType, OrderSide, OrderType, Broker, OrderStatus } from '../../types';
+import { CashMarginType, OrderSide, OrderType, OrderStatus } from '../../types';
 import CashStrategy from '../../Coincheck/CashStrategy';
 import BrokerApi from '../../Coincheck/BrokerApi';
 import nocksetup from './nocksetup';
-import OrderImpl from '../../OrderImpl';
 import * as nock from 'nock';
 import { options } from '@bitr/logger';
 import { createOrder } from '../helper';
@@ -14,11 +13,14 @@ describe('CashStrategy', () => {
   test('send buy limit', async () => {
     const strategy = new CashStrategy(new BrokerApi('', ''));
     const order = createOrder(
-      'Coincheck',
-      OrderSide.Buy,
-      0.005,
-      300000,
-      CashMarginType.Cash, OrderType.Limit, undefined);
+        'Coincheck',
+        OrderSide.Buy,
+        0.005,
+        300000,
+        CashMarginType.Cash,
+        OrderType.Limit,
+        // @ts-ignore
+        undefined);
     await strategy.send(order);
     expect(order.status).toBe(OrderStatus.New);
     expect(order.brokerOrderId).toBe('12345');

@@ -1,5 +1,4 @@
-import OrderImpl from '../OrderImpl';
-import { Broker, OrderSide, OrderType, CashMarginType, IExecution } from '../types';
+import { OrderSide, OrderType, CashMarginType, IExecution } from '../types';
 import { toExecution } from '../util';
 import { createOrder } from './helper';
 

@@ -1,11 +1,8 @@
-// tslint:disable
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Coincheck/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, RootConfig, IBrokerConfigType } from '../../types';
+import { OrderStatus, CashMarginType, OrderSide, OrderType, RootConfig, IBrokerConfigType } from '../../types';
 import nocksetup from './nocksetup';
-import OrderImpl from '../../OrderImpl';
-import { INewOrderRequest } from '../../Coincheck/types';
 import { options } from '@bitr/logger';
 import { createOrder } from '../helper';
 options.enabled = false;

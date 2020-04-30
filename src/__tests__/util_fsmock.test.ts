@@ -1,15 +1,14 @@
-
 jest.mock('fs', () => ({
   existsSync: jest.fn(() => false),
   readFileSync: jest.fn(() => '{"language": "test"}')
 }));
 
 import * as fs from 'fs';
-import * as util from '../util';
 import { getConfigRoot } from '../configUtil';
 
 test('getConfigRoot not found config.json', () => {
   const config = getConfigRoot();
+  // @ts-ignore
   expect(fs.existsSync.mock.calls.length).toBe(1);
   expect(config.language).toBe('test');
 });

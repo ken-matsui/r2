@@ -1,5 +1,7 @@
+// @ts-ignore
 import { getConfigRoot } from '../configUtil';
 
+// @ts-ignore
 getConfigRoot = jest.fn().mockImplementation(() => {
   throw new Error();
 });

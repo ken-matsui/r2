@@ -1,10 +1,8 @@
-// tslint:disable
 import * as nock from 'nock';
 import * as _ from 'lodash';
 import BrokerAdapterImpl from '../../Bitflyer/BrokerAdapterImpl';
-import { OrderStatus, Broker, CashMarginType, OrderSide, OrderType, TimeInForce, IBrokerConfigType } from '../../types';
+import {OrderStatus, CashMarginType, OrderSide, OrderType, TimeInForce, IBrokerConfigType, IOrder} from '../../types';
 import nocksetup from './nocksetup';
-import OrderImpl from '../../OrderImpl';
 import { options } from '@bitr/logger';
 import { createOrder } from '../helper';
 options.enabled = false;
@@ -31,7 +29,7 @@ describe('Bitflyer BrokerAdapter', () => {
   test('getBtcPosition throws', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     try {
-      const result = await target.getBtcPosition();
+      await target.getBtcPosition();
     } catch (ex) {
       expect(ex.message).toBe('Btc balance is not found.');
       return;
@@ -49,7 +47,7 @@ describe('Bitflyer BrokerAdapter', () => {
   test('fetchQuotes throws', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     try {
-      const result = await target.fetchQuotes();
+      await target.fetchQuotes();
     } catch (ex) {
       return;
     }
@@ -60,7 +58,7 @@ describe('Bitflyer BrokerAdapter', () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     const order = { broker: 'Coincheck' };
     try {
-      await target.send(order);
+      await target.send(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -71,7 +69,7 @@ describe('Bitflyer BrokerAdapter', () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     const order = { broker: 'Bitflyer', cashMarginType: CashMarginType.MarginOpen, symbol: 'ZZZ' };
     try {
-      await target.send(order);
+      await target.send(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -82,7 +80,7 @@ describe('Bitflyer BrokerAdapter', () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     const order = { broker: 'Bitflyer', cashMarginType: CashMarginType.Cash, symbol: 'ZZZ' };
     try {
-      await target.send(order);
+      await target.send(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -98,7 +96,7 @@ describe('Bitflyer BrokerAdapter', () => {
       type: OrderType.StopLimit
     };
     try {
-      await target.send(order);
+      await target.send(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -115,7 +113,7 @@ describe('Bitflyer BrokerAdapter', () => {
       timeInForce: 'MOCK'
     };
     try {
-      await target.send(order);
+      await target.send(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -124,7 +122,7 @@ describe('Bitflyer BrokerAdapter', () => {
 
   test('cancel', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
-    const order = { symbol: 'BTC/JPY', brokerOrderId: 'JRF20150707-033333-099999' };
+    const order = <IOrder>{ symbol: 'BTC/JPY', brokerOrderId: 'JRF20150707-033333-099999' };
     await target.cancel(order);
     expect(order.status).toBe(OrderStatus.Canceled);
   });
@@ -133,7 +131,7 @@ describe('Bitflyer BrokerAdapter', () => {
     const target = new BrokerAdapterImpl(brokerConfig);
     const order = { symbol: 'MOCK' };
     try {
-      await target.cancel(order);
+      await target.cancel(<IOrder>order);
     } catch (ex) {
       return;
     }
@@ -142,7 +140,15 @@ describe('Bitflyer BrokerAdapter', () => {
 
   test('send buy limit', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
-    const order = createOrder('Bitflyer', OrderSide.Buy, 0.1, 30000, CashMarginType.Cash, OrderType.Limit, undefined);
+    const order = createOrder(
+        'Bitflyer',
+        OrderSide.Buy,
+        0.1,
+        30000,
+        CashMarginType.Cash,
+        OrderType.Limit,
+        // @ts-ignore
+        undefined);
     await target.send(order);
     expect(order.status).toBe(OrderStatus.New);
     expect(order.brokerOrderId).toBe('JRF20150707-050237-639234');
@@ -150,6 +156,7 @@ describe('Bitflyer BrokerAdapter', () => {
 
   test('send buy limit Fok', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
+    // @ts-ignore
     const order = createOrder('Bitflyer', OrderSide.Buy, 0.1, 30000, CashMarginType.Cash, OrderType.Limit, undefined);
     order.timeInForce = TimeInForce.Fok;
     await target.send(order);
@@ -159,6 +166,7 @@ describe('Bitflyer BrokerAdapter', () => {
 
   test('send buy limit Ioc', async () => {
     const target = new BrokerAdapterImpl(brokerConfig);
+    // @ts-ignore
     const order = createOrder('Bitflyer', OrderSide.Buy, 0.1, 30000, CashMarginType.Cash, OrderType.Limit, undefined);
     order.timeInForce = TimeInForce.Ioc;
     await target.send(order);
@@ -185,6 +193,7 @@ describe('Bitflyer BrokerAdapter', () => {
       sentTime: '2017-11-03T09:20:07.292Z',
       lastUpdated: '2017-11-03T09:20:07.292Z'
     };
+    // @ts-ignore
     await target.refresh(order);
     expect(order.status).toBe(OrderStatus.Filled);
   });
@@ -208,6 +217,7 @@ describe('Bitflyer BrokerAdapter', () => {
       sentTime: '2017-11-03T09:20:07.292Z',
       lastUpdated: '2017-11-03T09:20:07.292Z'
     };
+    // @ts-ignore
     await target.refresh(order);
     expect(order.status).toBe(OrderStatus.Expired);
   });
@@ -231,6 +241,7 @@ describe('Bitflyer BrokerAdapter', () => {
       sentTime: '2017-11-03T09:20:07.292Z',
       lastUpdated: '2017-11-03T09:20:07.292Z'
     };
+    // @ts-ignore
     await target.refresh(order);
     expect(order.status).toBe(OrderStatus.Canceled);
   });
@@ -254,6 +265,7 @@ describe('Bitflyer BrokerAdapter', () => {
       sentTime: '2017-11-03T09:20:07.292Z',
       lastUpdated: '2017-11-03T09:20:07.292Z'
     };
+    // @ts-ignore
     await target.refresh(order);
     expect(order.status).toBe(OrderStatus.PartiallyFilled);
   });
@@ -277,6 +289,7 @@ describe('Bitflyer BrokerAdapter', () => {
       sentTime: '2017-11-03T09:20:07.292Z',
       lastUpdated: '2017-11-03T09:20:07.292Z'
     };
+    // @ts-ignore
     await target.refresh(order);
     expect(order.status).toBe(OrderStatus.New);
   });

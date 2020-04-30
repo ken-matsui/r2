@@ -1,7 +1,5 @@
 import * as util from '../util';
-import { Broker, OrderSide, CashMarginType, OrderType } from '../types';
 import { findBrokerConfig } from '../configUtil';
-import OrderImpl from '../OrderImpl';
 
 test('timestampToDate', () => {
   const dt = util.timestampToDate(1509586252);
@@ -9,7 +7,7 @@ test('timestampToDate', () => {
 });
 
 test('nonce', async () => {
-  const result = [];
+  const result: string[] = [];
   setTimeout(() => result.push(util.nonce()), 50);
   setTimeout(() => result.push(util.nonce()), 50);
   setTimeout(() => result.push(util.nonce()), 50);
@@ -46,6 +44,7 @@ test('readJsonFileSync with no BOM', () => {
 });
 
 test('findBrokerConfig with no config', () => {
+  // @ts-ignore
   expect(() => findBrokerConfig({ brokers: [] }, 'Bitflyer')).toThrow();
 });
 
@@ -58,6 +57,6 @@ test('safeQueryStringStringify', () => {
 test('cwd', () => {
   const tmp = process.env.NODE_ENV;
   process.env.NODE_ENV = '__test__';
-  const dir = util.cwd();
+  util.cwd();
   process.env.NODE_ENV = tmp;
 });
