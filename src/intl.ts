@@ -1,4 +1,5 @@
-import i18next from "i18next";
+import i18default from "i18next";
+const i18next: typeof i18default = require("i18next");
 import { getConfigRoot } from "./configUtil";
 import { en, ja } from "./stringResources";
 
