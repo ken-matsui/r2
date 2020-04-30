@@ -42,7 +42,7 @@
     "luxon": "^1.23.0",
     "mkdirp": "^1.0.4",
     "node-fetch": "^2.6.0",
-    "open": "^6.0.0",
+    "open": "^7.0.3",
     "pino": "^6.2.1",
     "reflect-metadata": "^0.1.13",
     "simple-statistics": "^7.0.9",
