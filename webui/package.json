@@ -23,7 +23,7 @@
     "@bitr/castable": "^1.0.3",
     "core-js": "^3.6.5",
     "lodash": "^4.17.13",
-    "reconnecting-websocket": "^3.2.2",
+    "reconnecting-websocket": "^4.4.0",
     "rxjs": "^6.5.3",
     "tslib": "^1.11.1",
     "zone.js": "~0.10.3"
