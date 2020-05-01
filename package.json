@@ -11,7 +11,7 @@
     "jest": "jest --runInBand",
     "cov": "jest --runInBand --coverage",
     "lint": "tslint -p .",
-    "build": "rimraf dist && tsc && npm run build --prefix ./webui",
+    "build": "rimraf dist && tsc",
     "gcp-build": "npm run build",
     "deploy": "gcloud app deploy",
     "clearPairs": "ts-node ./tools/clearPairs.ts",
