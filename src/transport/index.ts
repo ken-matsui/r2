@@ -116,7 +116,7 @@ function broadcast(clients: WebSocket[], type: string, body: any) {
 }
 
 function addIntegration(
-  Integration: { new (config: any): SlackIntegration | LineIntegration },
+  Integration: new (config: any) => SlackIntegration | LineIntegration,
   config: SlackConfig | LineConfig | undefined,
 ): void {
   if (config && config.enabled) {
