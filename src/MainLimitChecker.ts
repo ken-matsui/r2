@@ -53,6 +53,7 @@ export default class MainLimitChecker implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class MinExitTargetProfitLimit implements ILimitChecker {
   private readonly log = getLogger(this.constructor.name);
 
@@ -94,6 +95,7 @@ class MinExitTargetProfitLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class MaxNetExposureLimit implements ILimitChecker {
   constructor(private readonly configStore: IConfigStore, private readonly positionService: PositionService) {}
 
@@ -108,6 +110,7 @@ class MaxNetExposureLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class InvertedSpreadLimit implements ILimitChecker {
   constructor(private readonly spreadAnalysisResult: ISpreadAnalysisResult) {}
 
@@ -122,6 +125,7 @@ class InvertedSpreadLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class MinTargetProfitLimit implements ILimitChecker {
   constructor(
       private readonly configStore: IConfigStore,
@@ -152,6 +156,7 @@ class MinTargetProfitLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class MaxTargetProfitLimit implements ILimitChecker {
   constructor(
       private readonly configStore: IConfigStore,
@@ -181,6 +186,7 @@ class MaxTargetProfitLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class MaxTargetVolumeLimit implements ILimitChecker {
   constructor(
       private readonly configStore: IConfigStore,
@@ -209,6 +215,7 @@ class MaxTargetVolumeLimit implements ILimitChecker {
   }
 }
 
+// tslint:disable-next-line:max-classes-per-file
 class DemoModeLimit implements ILimitChecker {
   constructor(private readonly configStore: IConfigStore) {}
 
