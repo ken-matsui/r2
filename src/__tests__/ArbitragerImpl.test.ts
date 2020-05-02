@@ -408,7 +408,6 @@ describe('Arbitrager', () => {
   });
 
   test('Send and both orders filled', async () => {
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(order => {
       order.status = OrderStatus.Filled;
     });
@@ -486,7 +485,6 @@ describe('Arbitrager', () => {
   });
 
   test('Send and only buy order filled', async () => {
-    let i = 1;
     baRouter.refresh = order => {
       if (order.side === OrderSide.Buy) {
         order.status = OrderStatus.Filled;
@@ -519,7 +517,6 @@ describe('Arbitrager', () => {
   });
 
   test('Send and only sell order filled', async () => {
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(order => {
       if (order.side === OrderSide.Sell) {
         order.status = OrderStatus.Filled;
@@ -556,7 +553,6 @@ describe('Arbitrager', () => {
 
   test('Send and only sell order filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Sell) {
@@ -595,7 +591,6 @@ describe('Arbitrager', () => {
 
   test('Send and sell order filled and buy order partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Sell) {
@@ -634,7 +629,6 @@ describe('Arbitrager', () => {
 
   test('Send and sell order unfilled and buy order partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Sell) {
@@ -672,7 +666,6 @@ describe('Arbitrager', () => {
 
   test('Send and only buy order filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -711,7 +704,6 @@ describe('Arbitrager', () => {
 
   test('Send and buy order filled and sel order partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Buy) {
@@ -750,7 +742,6 @@ describe('Arbitrager', () => {
 
   test('Send and buy order unfilled and sel order partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Buy) {
@@ -788,7 +779,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.7;
       if (order.side === OrderSide.Buy) {
@@ -826,7 +816,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders same quantity partial filled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.8;
       if (order.side === OrderSide.Buy) {
@@ -864,7 +853,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders unfilled -> reverse', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -902,7 +890,6 @@ describe('Arbitrager', () => {
 
   test('Send and only buy order filled -> reverse -> fill', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     const fillBuy = async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -949,7 +936,6 @@ describe('Arbitrager', () => {
 
   test('Send and only buy order filled -> reverse -> send throws', async () => {
     config.onSingleLeg = { action: 'Reverse', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -994,7 +980,6 @@ describe('Arbitrager', () => {
 
   test('Send and only sell order filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Sell) {
@@ -1033,7 +1018,6 @@ describe('Arbitrager', () => {
 
   test('Send and only buy order filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -1072,7 +1056,6 @@ describe('Arbitrager', () => {
 
   test('Send and buy order filled and sell order partial filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Buy) {
@@ -1111,7 +1094,6 @@ describe('Arbitrager', () => {
 
   test('Send and buy order unfilled and sell order partial filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.3;
       if (order.side === OrderSide.Buy) {
@@ -1149,7 +1131,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders partial filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.7;
       if (order.side === OrderSide.Buy) {
@@ -1187,7 +1168,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders same quantity partial filled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0.8;
       if (order.side === OrderSide.Buy) {
@@ -1225,7 +1205,6 @@ describe('Arbitrager', () => {
 
   test('Send and both orders unfilled -> proceed', async () => {
     config.onSingleLeg = { action: 'Proceed', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
@@ -1263,7 +1242,6 @@ describe('Arbitrager', () => {
 
   test('Send and only buy order filled -> invalid action', async () => {
     config.onSingleLeg = { action: 'Invalid', options: { limitMovePercent: 10 } };
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(async order => {
       order.filledSize = 0;
       if (order.side === OrderSide.Buy) {
