@@ -4,7 +4,11 @@ import { EventEmitter } from 'events';
 import * as WebSocket from 'ws';
 
 describe('WebGateway', () => {
-  let quoteAggregator, positionService, opportunitySearcher, activePairStore, orderService;
+  let quoteAggregator;
+  let positionService;
+  let opportunitySearcher;
+  let activePairStore;
+  let orderService;
 
   beforeEach(() => {
     quoteAggregator = new EventEmitter();
