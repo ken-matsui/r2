@@ -9,6 +9,7 @@ export class DepthBrokerCellComponent implements OnInit {
   @Input() brokerCells: DepthBrokerCell[];
   @Input() isBest: boolean;
 
+  // tslint:disable-next-line:no-empty
   ngOnInit() {}
 
   getCssClass(b: DepthBrokerCell) {

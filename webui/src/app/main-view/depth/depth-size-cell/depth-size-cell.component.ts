@@ -13,6 +13,7 @@ export class DepthSizeCellComponent implements OnInit {
   @Input() side: string;
   sizeCellsWithContrast: { highPart: string; lowPart: string }[];
 
+  // tslint:disable-next-line:no-empty
   constructor() {}
 
   ngOnInit() {

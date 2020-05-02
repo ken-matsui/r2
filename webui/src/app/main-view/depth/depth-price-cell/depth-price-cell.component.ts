@@ -11,6 +11,7 @@ export class DepthPriceCellComponent implements OnInit {
   @Input() isBest: boolean;
   formattedPrice: string;
 
+  // tslint:disable-next-line:no-empty
   constructor() {}
 
   ngOnInit() {
