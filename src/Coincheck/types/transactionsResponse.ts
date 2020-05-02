@@ -6,9 +6,7 @@ import {Transaction} from "./transaction";
 export class TransactionsResponse extends Castable {
     @cast public success: boolean;
     @cast public pagination: Pagination;
-    @cast
-    @element(Transaction)
-    public data: Transaction[];
+    @cast @element(Transaction) public data: Transaction[];
 }
 
 export interface ICashMarginTypeStrategy {
