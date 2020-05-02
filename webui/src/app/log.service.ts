@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
-import { catchError, map, tap, filter, share } from 'rxjs/operators';
-import { Quote, WsMessage, BrokerMap, BrokerPosition, SpreadAnalysisResult, LogRecord } from './types';
-import * as ReconnectingWebSocket from 'reconnecting-websocket';
+import { map, filter, share } from 'rxjs/operators';
+import { WsMessage, LogRecord } from './types';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 @Injectable()
 export class LogService {
   private readonly host = window.location.hostname;
-  private readonly url = `ws://${this.host}:8721`; 
+  private readonly url = `ws://${this.host}:8721`;
   private connected = false;
   log$: Observable<LogRecord>;
   socket: Subject<MessageEvent>;
@@ -19,12 +19,12 @@ export class LogService {
       return;
     }
     const ws = new ReconnectingWebSocket(this.url);
-    const observable = Observable.create((obs: Observer<MessageEvent>) => {
+    const observable = new Observable((obs: Observer<MessageEvent>) => {
       ws.onmessage = obs.next.bind(obs);
       return ws.close.bind(ws);
     });
     const observer = {
-      next: (data: Object) => {
+      next: (data: object) => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify(data));
         }
