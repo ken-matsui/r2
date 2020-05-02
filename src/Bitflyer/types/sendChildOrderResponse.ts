@@ -1,3 +1,5 @@
+// tslint:disable:variable-name
+
 import {cast, Castable} from "@bitr/castable";
 
 export interface ISendChildOrderRequest {
@@ -11,7 +13,6 @@ export interface ISendChildOrderRequest {
 }
 
 export class SendChildOrderResponse extends Castable {
-    // tslint:disable-next-line:variable-name
     @cast public child_order_acceptance_id: string;
 }
 
