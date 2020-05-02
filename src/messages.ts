@@ -1,3 +1,5 @@
+// tslint:disable:max-classes-per-file
+
 import { ZmqRequester, ZmqResponder } from "@bitr/zmq";
 import { RootConfig, ISpreadStat } from "./types";
 
