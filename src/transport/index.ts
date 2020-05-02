@@ -24,7 +24,7 @@ process.on("SIGINT", () => {
   }
 });
 
-const logdir = "./logs";
+const logdir = "/tmp/r2/logs";
 mkdirp.sync(logdir);
 
 let configRoot;
@@ -46,7 +46,7 @@ process.stdin.pipe(
 ).pipe(process.stdout);
 
 // debug.log
-const debugFile = fs.createWriteStream("logs/debug.log", { flags: "a" });
+const debugFile = fs.createWriteStream("/tmp/r2/logs/debug.log", { flags: "a" });
 process.stdin.pipe(
     pretty({
       colorize: false,
@@ -64,7 +64,7 @@ const infoTransform = process.stdin.pipe(
       hidden: false,
       withLabel: true,
     }));
-const infoFile = fs.createWriteStream("logs/info.log", { flags: "a" });
+const infoFile = fs.createWriteStream("/tmp/r2/logs/info.log", { flags: "a" });
 infoTransform.pipe(infoFile);
 
 // notification integrations
