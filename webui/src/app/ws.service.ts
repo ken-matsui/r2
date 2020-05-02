@@ -2,19 +2,18 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 import { Observer } from 'rxjs/Observer';
-import { catchError, map, tap, filter, share } from 'rxjs/operators';
+import { map, filter, share } from 'rxjs/operators';
 import {
   Quote,
   WsMessage,
   BrokerMap,
   BrokerPosition,
   SpreadAnalysisResult,
-  OrderPair,
   ConfigRoot,
   PairWithSummary,
   LimitCheckResult
 } from './types';
-import * as ReconnectingWebSocket from 'reconnecting-websocket';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 
 @Injectable()
 export class WsService {
@@ -36,7 +35,7 @@ export class WsService {
       return;
     }
     const ws = new ReconnectingWebSocket(this.url);
-    const observable = Observable.create((obs: Observer<MessageEvent>) => {
+    const observable = new Observable((obs: Observer<MessageEvent>) => {
       ws.onmessage = obs.next.bind(obs);
       ws.onerror = e => {
         obs.next.bind(obs)({ data: JSON.stringify({ type: 'error', body: e }) });
@@ -44,7 +43,7 @@ export class WsService {
       return ws.close.bind(ws);
     });
     const observer = {
-      next: (data: Object) => {
+      next: (data: object) => {
         if (ws.readyState === WebSocket.OPEN) {
           ws.send(JSON.stringify(data));
         }
