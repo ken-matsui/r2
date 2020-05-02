@@ -23,7 +23,7 @@ describe('Quoine BrokerApi', () => {
 
   test('getOrders', async () => {
     const target = new BrokerApi(key, secret);
-    const res = await target.getOrders(118573146);
+    const res = await target.getOrders('118573146');
     expect(res.id).toBe('118573146');
   });
 
