@@ -1,4 +1,3 @@
-import OrderImpl from '../OrderImpl';
 import { OrderStatus, OrderSide, CashMarginType, OrderType, Broker, OrderPair } from '../types';
 import { getActivePairStore } from '../ActivePairLevelStore';
 import { ChronoDB } from '@bitr/chronodb';
@@ -9,7 +8,7 @@ describe('ActivePairLevelStore', () => {
   let store;
   let chronoDB;
   beforeAll(async () => {
-    chronoDB = new ChronoDB(`${__dirname}/datastore/1`);
+    chronoDB = new ChronoDB(`/tmp/r2/test/datastore/1`);
     store = getActivePairStore(chronoDB);
     await store.delAll();
   });

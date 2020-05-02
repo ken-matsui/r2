@@ -1,52 +1,46 @@
 import {
-  Broker,
   QuoteSide,
   RootConfig,
   IConfigStore,
   CashMarginType,
   OrderStatus,
   OrderSide,
-  OnSingleLegConfig,
   IOrder,
   IExecution,
-  IQuote
 } from '../types';
 import Arbitrager from '../Arbitrager';
 import OppotunitySearcher from '../OpportunitySearcher';
 import PairTrader from '../PairTrader';
 import LimitCheckerFactory from '../LimitCheckerFactory';
 import SpreadAnalyzer from '../SpreadAnalyzer';
-import { delay, toQuote } from '../util';
+import { toQuote } from '../util';
 import { options } from '@bitr/logger';
 import { getActivePairStore } from '../ActivePairLevelStore';
 import { ChronoDB } from '@bitr/chronodb';
 import QuoteAggregator from '../QuoteAggregator';
-import PositionService from '../PositionService';
-import BrokerAdapterRouter from '../BrokerAdapterRouter';
-import OrderImpl from '../OrderImpl';
 import SingleLegHandler from '../SingleLegHandler';
 import AwaitableEventEmitter from '@bitr/awaitable-event-emitter/dist/AwaitableEventEmitter';
 options.enabled = false;
 
-const chronoDB = new ChronoDB(`${__dirname}/datastore/1`);
+const chronoDB = new ChronoDB(`/tmp/r2/test/datastore/1`);
 const activePairStore = getActivePairStore(chronoDB);
 
-let quoteAggregator,
-  config: RootConfig,
-  configStore,
-  positionMap,
-  positionService,
-  baRouter,
-  spreadAnalyzer,
-  quotes,
-  limitCheckerFactory;
+let quoteAggregator;
+let config: RootConfig;
+let configStore;
+let positionMap;
+let positionService;
+let baRouter;
+let spreadAnalyzer;
+let quotes;
+let limitCheckerFactory;
 
 describe('Arbitrager', () => {
   beforeEach(async () => {
-    const aee: QuoteAggregator = new AwaitableEventEmitter();
+    const aee = new AwaitableEventEmitter() as QuoteAggregator;
     aee.start = jest.fn();
     aee.stop = jest.fn();
-    quoteAggregator = aee as QuoteAggregator;
+    quoteAggregator = aee;
     config = {
       symbol: 'BTC/JPY',
       maxNetExposure: 10.0,
@@ -448,9 +442,8 @@ describe('Arbitrager', () => {
   });
 
   test('Send and both orders filled with different send size', async () => {
-    const chronoDB = new ChronoDB(`${__dirname}/datastore/diff_size`);
+    const chronoDB = new ChronoDB(`/tmp/r2/test/datastore/diff_size`);
     const activePairStore = getActivePairStore(chronoDB);
-    let i = 1;
     baRouter.refresh = jest.fn().mockImplementation(order => {
       order.status = OrderStatus.Filled;
     });

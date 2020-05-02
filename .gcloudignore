@@ -18,6 +18,5 @@ coverage
 .vscode
 .idea
 .python-version
-datastore/
 reports/
 sandbox/

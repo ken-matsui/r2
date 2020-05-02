@@ -7,7 +7,7 @@ describe('HistoricalOrderStore', () => {
   let store: IHistoricalOrderStore;
   let chronoDB;
   beforeAll(async () => {
-    chronoDB = new ChronoDB(`${__dirname}/datastore/histtest`);
+    chronoDB = new ChronoDB(`/tmp/r2/test/datastore/histtest`);
     store = getHistoricalOrderStore(chronoDB);
     await store.delAll();
   });

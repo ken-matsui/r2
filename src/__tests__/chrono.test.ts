@@ -5,8 +5,8 @@ test('close undefined', () => {
 });
 
 test('get twice', () => {
-  const store = getChronoDB(`${__dirname}/datastore/chronoDBTest`);
-  const store2 = getChronoDB(`${__dirname}/datastore/chronoDBTest`);
-  expect(store).toBe(store2);  
+  const store = getChronoDB(`/tmp/r2/test/datastore/chronoDBTest`);
+  const store2 = getChronoDB(`/tmp/r2/test/datastore/chronoDBTest`);
+  expect(store).toBe(store2);
   closeChronoDB();
 });

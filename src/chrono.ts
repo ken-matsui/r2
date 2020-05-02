@@ -1,7 +1,7 @@
 import { ChronoDB } from "@bitr/chronodb";
 import * as mkdirp from "mkdirp";
 
-const prodPath = `${process.cwd()}/datastore/main`;
+const prodPath = `/tmp/r2/datastore/main`;
 let chronoDB: ChronoDB;
 
 export function getChronoDB(path: string = prodPath): ChronoDB {
