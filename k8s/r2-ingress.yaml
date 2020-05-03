@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: r2-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: r2-static-ip
+    networking.gke.io/managed-certificates: r2-ssl-certificate
+spec:
+  backend:
+    serviceName: r2-service
+    servicePort: 80
