@@ -8,4 +8,6 @@ RUN npm install
 RUN npm run postinstall
 RUN npm run build
 
+RUN rm -rf node_modules
+
 CMD npm start
