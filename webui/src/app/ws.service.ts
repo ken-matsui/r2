@@ -9,7 +9,7 @@ import {
   BrokerMap,
   BrokerPosition,
   SpreadAnalysisResult,
-  ConfigRoot,
+  RootConfig,
   PairWithSummary,
   LimitCheckResult
 } from './types';
@@ -21,7 +21,7 @@ export class WsService {
   private readonly url = `ws://${this.host}:8720`;
   private connected = false;
   error$: Observable<{ code: string }>;
-  config$: Observable<ConfigRoot>;
+  config$: Observable<RootConfig>;
   activePair$: Observable<PairWithSummary[]>;
   log$: Observable<string>;
   limitCheck$: Observable<LimitCheckResult>;
@@ -57,7 +57,7 @@ export class WsService {
     this.limitCheck$ = this.mapMessage<LimitCheckResult>(sharedObservable, 'limitCheckDone');
     this.log$ = this.mapMessage<string>(sharedObservable, 'log');
     this.activePair$ = this.mapMessage<PairWithSummary[]>(sharedObservable, 'activePairRefresh');
-    this.config$ = this.mapMessage<ConfigRoot>(sharedObservable, 'configUpdated');
+    this.config$ = this.mapMessage<RootConfig>(sharedObservable, 'configUpdated');
     this.error$ = this.mapMessage<{ code: string }>(sharedObservable, 'error');
     this.connected = true;
   }

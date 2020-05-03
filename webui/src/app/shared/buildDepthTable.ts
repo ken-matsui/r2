@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { Quote, QuoteSide, DepthLine, BrokerPosition, BrokerMap, ConfigRoot } from '../types';
+import { Quote, QuoteSide, DepthLine, BrokerPosition, BrokerMap, RootConfig } from '../types';
 
 class DepthTable {
   private readonly depthSize = 100;
@@ -9,7 +9,7 @@ class DepthTable {
   constructor(
     private readonly quotes: Quote[],
     private readonly positionMap: BrokerMap<BrokerPosition>,
-    private readonly config: ConfigRoot
+    private readonly config: RootConfig
   ) {}
 
   build(): DepthLine[] {
@@ -93,6 +93,6 @@ class DepthTable {
   }
 }
 
-export function buildDepthTable(quotes: Quote[], positionMap: BrokerMap<BrokerPosition>, config: ConfigRoot) {
+export function buildDepthTable(quotes: Quote[], positionMap: BrokerMap<BrokerPosition>, config: RootConfig) {
   return new DepthTable(quotes, positionMap, config).build();
 }
