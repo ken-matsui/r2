@@ -10,7 +10,7 @@
     "posttest": "npm run lint",
     "jest": "jest --runInBand",
     "cov": "jest --runInBand --coverage",
-    "lint": "tslint -p .",
+    "lint": "tslint -p . && npm run lint --prefix ./webui",
     "build": "rimraf dist && tsc && npm run build --prefix ./webui",
     "gcp-build": "npm i && npm run build",
     "deploy": "gcloud app deploy",
