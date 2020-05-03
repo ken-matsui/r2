@@ -6,10 +6,8 @@
   "scripts": {
     "postinstall": "npm install --prefix ./webui",
     "start": "node ./dist | node ./dist/transport",
-    "test": "npm run cov && cat ./coverage/lcov.info | coveralls",
-    "posttest": "npm run lint",
-    "jest": "jest --runInBand",
-    "cov": "jest --runInBand --coverage",
+    "test": "jest --runInBand",
+    "cov": "jest --runInBand --coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "tslint -p . && npm run lint --prefix ./webui",
     "build": "rimraf dist && tsc && npm run build --prefix ./webui",
     "gcp-build": "npm i && npm run build",
