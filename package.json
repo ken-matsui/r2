@@ -10,7 +10,6 @@
     "cov": "jest --runInBand --coverage && cat ./coverage/lcov.info | coveralls",
     "lint": "tslint -p . && npm run lint --prefix ./webui",
     "build": "rimraf dist && tsc && npm run build --prefix ./webui",
-    "gcp-build": "npm i && npm run build",
     "deploy": "gcloud app deploy",
     "clearPairs": "ts-node ./tools/clearPairs.ts",
     "getBalance": "ts-node ./tools/getBalance.ts",
