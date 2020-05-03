@@ -1,7 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { LogViewComponent } from './log-view.component';
-import { LogService } from '../log.service';
+import { LogService } from '../../log.service';
 
 const logServiceStub = {
   connect: []
