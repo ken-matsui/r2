@@ -58,4 +58,4 @@ jobs:
 
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
-      run: kubectl rollout restart deployment/r2
+      run: kubectl set image deployment/$IMAGE_NAME $IMAGE_NAME="gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA"
