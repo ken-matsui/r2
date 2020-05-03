@@ -1,6 +1,6 @@
 [日本語はこちら](http://qiita.com/bitrinjani/items/3ed756da9baf7d171306)
 
-[![Build Status](https://travis-ci.org/bitrinjani/r2.svg?branch=master)](https://travis-ci.org/bitrinjani/r2) [![Coverage Status](https://coveralls.io/repos/github/bitrinjani/r2/badge.svg?branch=master&i=5)](https://coveralls.io/github/bitrinjani/r2?branch=master)
+![R2 CI](https://github.com/matken11235/r2/workflows/R2%20CI/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/bitrinjani/r2/badge.svg?branch=master&i=5)](https://coveralls.io/github/bitrinjani/r2?branch=master)
 # R2 Bitcoin Arbitrager
 
 R2 Bitcoin Arbitrager is an automatic arbitrage trading application targeting Bitcoin exchanges.
