@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: R2 CI
 on: [push, pull_request]
 
 jobs:
@@ -20,5 +20,42 @@ jobs:
     - run: npm run build
     - run: npm run lint
 #    - run: npm run jest  FIXME: will fail
-#    - run: npm run deploy
-#       if: github.ref == 'refs/heads/master'
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    needs: build
+
+    env:
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
+      GKE_CLUSTER: r2-cluster
+      GKE_REGION: us-west1
+      IMAGE_NAME: r2
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Setup gcloud CLI
+    - uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.PROJECT_ID }}
+
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - run: gcloud --quiet auth configure-docker
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - run: gcloud container clusters get-credentials "$GKE_CLUSTER" --region "$GKE_REGION"
+
+    # Build the Docker image
+    - name: Build
+      run: docker build --tag "gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA" .
+
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: docker push "gcr.io/$PROJECT_ID/$IMAGE_NAME:$GITHUB_SHA"
+
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: kubectl rollout restart deployment/r2
