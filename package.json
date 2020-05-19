@@ -57,7 +57,7 @@
     "@types/jsonwebtoken": "^8.3.9",
     "@types/lodash": "^4.14.150",
     "@types/luxon": "^1.24.0",
-    "@types/node": "^13.13.4",
+    "@types/node": "^14.0.3",
     "@types/node-fetch": "^2.5.7",
     "@types/pino": "^6.0.1",
     "@types/split2": "^2.1.6",
