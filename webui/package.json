@@ -23,7 +23,7 @@
     "@angular/router": "^9.1.4",
     "@bitr/castable": "^1.0.3",
     "core-js": "^3.6.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "reconnecting-websocket": "^4.4.0",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.5.5",
