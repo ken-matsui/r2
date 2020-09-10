@@ -39,7 +39,7 @@
     "lodash": "^4.17.15",
     "luxon": "^1.24.1",
     "mkdirp": "^1.0.4",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "open": "^7.0.4",
     "pino": "^6.2.1",
     "reflect-metadata": "^0.1.13",
